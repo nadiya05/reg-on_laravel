@@ -30,12 +30,12 @@
 
         }
        .login-image {
-            background: url("{{ asset('/images/bundaran mangga.jpeg') }}") no-repeat center center;
+            background: url("{{ asset('storage/images/bundaran mangga.jpeg') }}") no-repeat center center;
             background-size: cover;
             min-height: 650px; /* tinggi gambar disejajarin dengan form */
         }
         .login-form {
-            padding: 50px 40px;
+            padding: 0px 40px 150px; /* atas 20px, samping 40px, bawah 50px */
         }
         .form-control {
             border-radius: 8px;
@@ -57,7 +57,7 @@
             margin-bottom: 30px;
         }
         .logo img {
-            height: 50px;
+            height: 200px;
             margin-right: 10px;
         }
         .logo span {
@@ -80,7 +80,7 @@
                 <div class="login-form w-100">
                     <!-- Logo -->
                     <div class="logo">
-                        <img src="{{ asset('/images/logo.png') }}" alt="Logo">
+                        <img src="{{ asset('storage/images/logo.png') }}" alt="Logo">
                     </div>
 
                     <h4 class="mb-4 text-center">MASUK ADMIN</h4>
