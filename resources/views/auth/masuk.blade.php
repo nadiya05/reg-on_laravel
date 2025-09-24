@@ -30,7 +30,7 @@
 
         }
        .login-image {
-            background: url("{{ asset('storage/images/bundaran mangga.jpeg') }}") no-repeat center center;
+            background: url("{{ asset('/images/bundaran mangga.jpeg') }}") no-repeat center center;
             background-size: cover;
             min-height: 650px; /* tinggi gambar disejajarin dengan form */
         }
@@ -80,7 +80,7 @@
                 <div class="login-form w-100">
                     <!-- Logo -->
                     <div class="logo">
-                        <img src="" alt="Logo">
+                        <img src="{{ asset('/images/logo.png') }}" alt="Logo">
                     </div>
 
                     <h4 class="mb-4 text-center">MASUK ADMIN</h4>
