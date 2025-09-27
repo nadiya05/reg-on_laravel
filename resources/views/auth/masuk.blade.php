@@ -85,10 +85,11 @@
 
                     <h4 class="mb-4 text-center">MASUK ADMIN</h4>
 
-                    <form method="POST" action="{{ route('masuk') }}">
+                    <!-- Form Login -->
+                    <form method="POST" action="{{ route('login.proses') }}">
                         @csrf
                         <div class="mb-3">
-                            <input type="text" name="username" class="form-control" placeholder="Username" required>
+                            <input type="text" name="name" class="form-control" placeholder="Username" required>
                         </div>
                         <div class="mb-3">
                             <input type="password" name="password" class="form-control" placeholder="Password" required>
@@ -97,6 +98,13 @@
                             <button type="submit" class="btn btn-login">Masuk</button>
                         </div>
                     </form>
+
+                    <!-- Pesan Error -->
+                    @if($errors->any())
+                        <div class="alert alert-danger mt-3">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

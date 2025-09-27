@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -7,31 +6,38 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    // Menampilkan form login
+    // Tampilkan form login
     public function showLogin()
     {
-        return view('auth.masuk');
+        return view('auth.masuk'); // ✅ view disamakan dengan blade
     }
 
     // Proses login
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'username' => ['required'],
+            'name' => ['required'],
             'password' => ['required'],
         ]);
 
-        // kalau pakai email:
-        // if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
-
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard')->with('success', 'Berhasil login!');
+
+            // pastikan hanya admin yang bisa login ke web
+            if (Auth::user()->role !== 'admin') {
+                Auth::logout();
+                return back()->withErrors([
+                    'name' => 'Akses ditolak, hanya admin yang bisa login.',
+                ]);
+            }
+
+            // redirect ke beranda/dashboard
+            return redirect()->route('beranda')->with('success', 'Berhasil login!');
         }
 
         return back()->withErrors([
-            'username' => 'Username atau password salah.',
-        ])->onlyInput('username');
+            'name' => 'Username atau password salah.',
+        ])->onlyInput('name');
     }
 
     // Logout
@@ -40,6 +46,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('masuk');
+        return redirect()->route('masuk'); // ✅ balik ke halaman login
     }
 }

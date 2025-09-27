@@ -25,7 +25,8 @@ class KelolaAkunController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'jenis_kelamin' => 'required',
-            'no_telp' => 'required'
+            'no_telp' => 'required',
+            'password'=>'required'
         ]);
 
         User::create($request->all());
@@ -47,7 +48,8 @@ class KelolaAkunController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'jenis_kelamin' => 'required',
-            'no_telp' => 'required'
+            'no_telp' => 'required',
+            'password'=>'required'
         ]);
 
         $user->update($request->all());

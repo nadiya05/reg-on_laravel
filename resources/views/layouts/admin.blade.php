@@ -11,7 +11,6 @@
         body {
             font-family: 'Poppins', sans-serif;
         }
-
         /* Sidebar */
         .sidebar {
             position: fixed;
@@ -40,6 +39,26 @@
             background: #d8d6d6;
             color: #909090;
         }
+
+        /* Tombol logout samain dengan link sidebar */
+.logout-link {
+    display: block;
+    padding: 12px 20px;
+    color: #909090;
+    text-decoration: none;
+    font-weight: 100;
+    font-size: 15px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.logout-link:hover {
+    background: #d8d6d6;
+    color: #909090;
+}
 
         /* custom scrollbar */
         .sidebar::-webkit-scrollbar {
@@ -154,7 +173,14 @@
         <a href="#">Kelola status KIA</a>
         <a href="#">Kelola berita</a>
         <a href="#">Chat</a>
-        <a href="#">Keluar</a>
+        <form action="{{ route('keluar') }}" method="POST">
+            @csrf
+            <button type="submit" class="logout-link">Keluar</button>
+        </form>
+</form>
+
+</form>
+
     </div>
 
     <!-- Header -->
@@ -168,7 +194,7 @@
             <img src="{{ asset('/storage/images/logo.png') }}" alt="Logo Reg-On">
         </div>
         <div class="d-flex align-items-center">
-            <span class="me-3">Admin</span>
+            <span class="me-3">{{ Auth::user()->name }}</span>
             <i class="bi bi-person-circle fs-2"></i>
         </div>
     </div>

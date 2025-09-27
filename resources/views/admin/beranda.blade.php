@@ -92,7 +92,7 @@
 </style>
 
 <div class="dashboard-header">
-    <h4 class="dashboard-title">Selamat Datang, Admin!</h4>
+    <h4 class="dashboard-title">Selamat Datang, {{ Auth::user()->name }}!</h4>
     <p class="dashboard-subtitle">Administrator Panel - Reg-On</p>
 
     <!-- Kalender -->
@@ -120,28 +120,28 @@
                 <div class="card-stat">
                     <i class="bi bi-people-fill"></i>
                     <h6>Total Penduduk</h6>
-                    <h3>{{ $data['totalPenduduk'] }}</h3>
+                    <h3>#</h3>
                 </div>
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="card-stat">
                     <i class="bi bi-person-vcard"></i>
                     <h6>Total Pengajuan KTP</h6>
-                    <h3>{{ $data['totalKTP'] }}</h3>
+                    <h3>#</h3>
                 </div>
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="card-stat">
                     <i class="bi bi-journal-text"></i>
                     <h6>Total Pengajuan KK</h6>
-                    <h3>{{ $data['totalKK'] }}</h3>
+                    <h3>#</h3>
                 </div>
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="card-stat">
                     <i class="bi bi-file-earmark-person"></i>
                     <h6>Total Pengajuan KIA</h6>
-                    <h3>{{ $data['totalKIA'] }}</h3>
+                    <h3>#</h3>
                 </div>
             </div>
         </div>
@@ -158,7 +158,7 @@
             labels: ['KTP', 'KK', 'KIA'],
             datasets: [{
                 label: 'Jumlah Pengajuan',
-                data: [{{ $data['totalKTP'] }}, {{ $data['totalKK'] }}, {{ $data['totalKIA'] }}],
+                data: [#],
                 backgroundColor: ['#007bff', '#28a745', '#ffc107'],
                 borderRadius: 8
             }]

@@ -65,7 +65,8 @@
             <thead class="table-primary text-white">
                 <tr>
                     <th>Id</th>
-                    <th>Nik</th>
+                    <th>Role</th>
+                    <th>NIK</th>
                     <th>Nama</th>
                     <th>Email</th>
                     <th>Jenis Kelamin</th>
@@ -77,6 +78,7 @@
                 @forelse ($users as $user)
                 <tr>
                     <td>{{ $user->id }}</td>
+                    <td>{{ $user->role }}</td>
                     <td>{{ $user->nik }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
