@@ -26,6 +26,7 @@ class User extends Authenticatable
     'alamat',
     'jenis_kelamin',
     'no_telp',
+    'foto',
 ];
 
     /**

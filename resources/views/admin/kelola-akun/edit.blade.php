@@ -5,7 +5,7 @@
     <h4 class="mb-3">Edit Pengguna</h4>
 
     <div class="card p-4 shadow-sm">
-        <form action="{{ route('admin.kelola-akun.update', $user->id) }}" method="POST">
+        <form action="{{ route('admin.kelola-akun.update', $user->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -53,8 +53,23 @@
 
             <div class="mb-3">
                 <label for="password" class="form-label">Sandi</label>
-                <input type="password" name="password" class="form-control" value="{{ old('password', $user->password) }}" required>
+                <input type="password" name="password" class="form-control" value="{{ old('password') }}" placeholder="Kosongkan jika tidak ingin ganti">
                 @error('password') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            {{-- Foto --}}
+            <div class="mb-3">
+                <label for="foto" class="form-label">Foto</label>
+                @if($user->foto)
+                    <div class="mb-2">
+                        <img src="{{ asset('storage/' . $user->foto) }}" 
+                             alt="{{ $user->name }}" 
+                             class="rounded-circle" 
+                             style="width: 80px; height: 80px; object-fit: cover;">
+                    </div>
+                @endif
+                <input type="file" name="foto" class="form-control">
+                @error('foto') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
             <button type="submit" class="btn btn-primary">Update</button>

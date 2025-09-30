@@ -164,7 +164,7 @@
     <div class="sidebar hidden" id="sidebar">
         <a href="{{ route('admin.beranda') }}">Beranda</a>
         <a href="{{ route('admin.kelola-akun') }}">Kelola Akun Pengguna</a>
-        <a href="#">Kelola Informasi</a>
+        <a href="{{ route('admin.kelola-informasi') }}">Kelola Informasi</a>
         <a href="#">Kelola Pengajuan KTP</a>
         <a href="#">Kelola Status KTP</a>
         <a href="#">Kelola Pengajuan KK</a>

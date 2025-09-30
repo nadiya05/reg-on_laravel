@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class KelolaAkunController extends Controller
 {
@@ -26,10 +28,21 @@ class KelolaAkunController extends Controller
             'email' => 'required|email|unique:users',
             'jenis_kelamin' => 'required',
             'no_telp' => 'required',
-            'password'=>'required'
+            'password' => 'required|min:6',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        User::create($request->all());
+        $data = $request->except('password', 'foto');
+        $data['password'] = Hash::make($request->password);
+
+        // simpan foto jika ada
+        if ($request->hasFile('foto')) {
+            $path = $request->file('foto')->store('images', 'public');
+            $data['foto'] = $path; // simpan path images/nama.jpg ke DB
+        }
+
+        User::create($data);
+
         return redirect()->route('admin.kelola-akun')->with('success', 'User berhasil ditambahkan!');
     }
 
@@ -49,17 +62,43 @@ class KelolaAkunController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'jenis_kelamin' => 'required',
             'no_telp' => 'required',
-            'password'=>'required'
+            'password' => 'nullable|min:6',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $user->update($request->all());
+        $data = $request->except('password', 'foto');
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        // update foto jika ada upload baru
+        if ($request->hasFile('foto')) {
+            // hapus foto lama
+            if ($user->foto && Storage::disk('public')->exists($user->foto)) {
+                Storage::disk('public')->delete($user->foto);
+            }
+
+            $path = $request->file('foto')->store('images', 'public');
+            $data['foto'] = $path;
+        }
+
+        $user->update($data);
+
         return redirect()->route('admin.kelola-akun')->with('success', 'User berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        User::findOrFail($id)->delete();
+        $user = User::findOrFail($id);
+
+        // hapus foto juga
+        if ($user->foto && Storage::disk('public')->exists($user->foto)) {
+            Storage::disk('public')->delete($user->foto);
+        }
+
+        $user->delete();
+
         return redirect()->route('admin.kelola-akun')->with('success', 'User berhasil dihapus!');
     }
 }
-

@@ -71,6 +71,7 @@
                     <th>Email</th>
                     <th>Jenis Kelamin</th>
                     <th>No Telepon</th>
+                    <th>Foto</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -84,6 +85,14 @@
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->jenis_kelamin }}</td>
                     <td>{{ $user->no_telp }}</td>
+                    <td>
+                        @if($user->foto)
+                            <img src="{{ asset('storage/' . $user->foto) }}" alt="{{ $user->name }}"
+                                     class="rounded-circle" style="width: 80px; height: 90px; object-fit: cover;">
+                        @else
+                            <span class="text-muted">Tidak ada</span>
+                        @endif
+                    </td>
                     <td>
                         <a href="{{ route('admin.kelola-akun.edit', $user->id) }}" class="btn btn-warning btn-sm">
                             <i class="bi bi-pencil"></i>

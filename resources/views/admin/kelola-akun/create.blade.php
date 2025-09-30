@@ -5,7 +5,7 @@
     <h4 class="mb-3">Tambah Pengguna</h4>
 
     <div class="card p-4 shadow-sm">
-        <form action="{{ route('admin.kelola-akun.store') }}" method="POST">
+        <form action="{{ route('admin.kelola-akun.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
                 <label for="nik" class="form-label">NIK</label>
@@ -52,8 +52,15 @@
 
             <div class="mb-3">
                 <label for="password" class="form-label">Sandi</label>
-                <input type="password" name="password" class="form-control" value="{{ old('password') }}" required>
+                <input type="password" name="password" class="form-control" required>
                 @error('password') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            <!-- Input foto -->
+            <div class="mb-3">
+                <label for="foto" class="form-label">Foto</label>
+                <input type="file" name="foto" class="form-control" accept="image/*">
+                @error('foto') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
             <button type="submit" class="btn btn-primary">Simpan</button>
