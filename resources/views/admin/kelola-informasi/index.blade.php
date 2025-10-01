@@ -72,15 +72,15 @@
             <tbody>
                 @forelse($informasi as $item)
                 <tr>
-                    <td>{{ $item['id'] }}</td>
-                    <td>{{ $item['jenis_pengajuan'] }}</td>
-                    <td>{{ $item['jenis_dokumen'] }}</td>
-                    <td>{{ $item['deskripsi'] }}</td>
+                    <td>{{ $item->id }}</td>
+                    <td>{{ $item->jenis_pengajuan }}</td>
+                    <td>{{ $item->jenis_dokumen }}</td>
+                    <td>{{ $item->deskripsi }}</td>
                     <td>
-                        <a href="{{ route('admin.informasi.edit', $item['id']) }}" class="btn btn-warning btn-sm">
+                        <a href="{{ route('admin.kelola-informasi.edit', $item->id) }}" class="btn btn-warning btn-sm">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <form action="{{ route('admin.informasi.destroy', $item['id']) }}" method="POST" class="d-inline">
+                        <form action="{{ route('admin.kelola-informasi.destroy', $item->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Yakin hapus data?')" class="btn btn-danger btn-sm">
@@ -99,4 +99,3 @@
     </div>
 </div>
 @endsection
-

@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <h4 class="mb-3">Tambah Pengguna</h4>
+    <h4 class="mb-3">Tambah Pengguna Baru</h4>
 
     <div class="card p-4 shadow-sm">
         <form action="{{ route('admin.kelola-akun.store') }}" method="POST" enctype="multipart/form-data">

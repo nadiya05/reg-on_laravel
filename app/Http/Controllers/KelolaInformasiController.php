@@ -2,42 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Informasi;
 use Illuminate\Http\Request;
 
 class KelolaInformasiController extends Controller
 {
-    // Tampilkan semua data (kosong dulu)
+    // Tampilkan semua data
     public function index()
     {
-        $informasi = []; // masih kosong
+        $informasi = Informasi::all();
         return view('admin.kelola-informasi.index', compact('informasi'));
     }
 
     // Form tambah
     public function create()
     {
-        return view('admin.kelola-informasi.create');
+        // opsi dropdown bisa kamu definisikan di sini
+        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak', 'Ubah Status'];
+        $dokumenOptions   = ['KTP', 'KK', 'KIA'];
+
+        return view('admin.kelola-informasi.create', compact('pengajuanOptions', 'dokumenOptions'));
     }
 
-    // Simpan data baru (sementara belum ada database)
+    // Simpan data baru
     public function store(Request $request)
     {
-        // validasi aja dulu
         $request->validate([
             'jenis_pengajuan' => 'required|string|max:255',
             'jenis_dokumen'   => 'required|string|max:255',
             'deskripsi'       => 'nullable|string',
         ]);
 
-        // belum ada penyimpanan, langsung redirect
-        return redirect()->route('admin.informasi.index')->with('success', 'Data berhasil ditambahkan (dummy)!');
+        Informasi::create($request->all());
+
+        return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil ditambahkan!');
     }
 
     // Form edit
     public function edit($id)
     {
-        $info = null; // kosong karena belum ada data
-        return view('admin.informasi.edit', compact('info'));
+        $info = Informasi::findOrFail($id);
+        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak', 'Ubah Status'];
+        $dokumenOptions   = ['KTP', 'KK', 'KIA'];
+
+        return view('admin.kelola-informasi.edit', compact('info', 'pengajuanOptions', 'dokumenOptions'));
     }
 
     // Update data
@@ -49,12 +57,18 @@ class KelolaInformasiController extends Controller
             'deskripsi'       => 'nullable|string',
         ]);
 
-        return redirect()->route('admin.informasi.index')->with('success', 'Data berhasil diperbarui (dummy)!');
+        $info = Informasi::findOrFail($id);
+        $info->update($request->all());
+
+        return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil diperbarui!');
     }
 
     // Hapus data
     public function destroy($id)
     {
-        return redirect()->route('admin.informasi.index')->with('success', 'Data berhasil dihapus (dummy)!');
+        $info = Informasi::findOrFail($id);
+        $info->delete();
+
+        return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil dihapus!');
     }
 }
