@@ -101,4 +101,40 @@ class KelolaAkunController extends Controller
 
         return redirect()->route('admin.kelola-akun')->with('success', 'User berhasil dihapus!');
     }
+
+    public function updateApi(Request $request, $id)
+{
+    $user = User::findOrFail($id);
+
+    $request->validate([
+        'nik' => 'required|unique:users,nik,' . $id,
+        'name' => 'required',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'jenis_kelamin' => 'required',
+        'no_telp' => 'required',
+        'password' => 'nullable|min:6',
+        'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    $data = $request->except('password', 'foto');
+
+    if ($request->filled('password')) {
+        $data['password'] = Hash::make($request->password);
+    }
+
+    if ($request->hasFile('foto')) {
+        if ($user->foto && Storage::disk('public')->exists($user->foto)) {
+            Storage::disk('public')->delete($user->foto);
+        }
+        $path = $request->file('foto')->store('images', 'public');
+        $data['foto'] = $path;
+    }
+
+    $user->update($data);
+
+    return response()->json([
+        'message' => 'User berhasil diperbarui!',
+        'user' => $user,
+    ]);
+}
 }
