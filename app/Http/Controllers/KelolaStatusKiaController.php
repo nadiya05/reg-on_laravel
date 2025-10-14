@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PengajuanKia;
 use App\Models\User;
-use PDF;
+use Barryvdh\DomPDF\Facade\PDF;
 
 class KelolaStatusKiaController extends Controller
 {
@@ -51,7 +51,7 @@ class KelolaStatusKiaController extends Controller
         $pengajuan = PengajuanKia::findOrFail($id);
         $user = User::findOrFail($pengajuan->user_id);
 
-        $pdf = PDF::loadView('cetak_resume_kia', compact('pengajuan', 'user'))
+        $pdf = PDF::loadView('cetak_resume', compact('pengajuan', 'user'))
                 ->setPaper('A4', 'portrait');
 
         $fileName = 'Resume_KIA_' . $pengajuan->nomor_antrean . '.pdf';

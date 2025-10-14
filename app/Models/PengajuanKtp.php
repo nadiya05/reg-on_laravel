@@ -19,7 +19,7 @@ class PengajuanKtp extends Model
 
     public static function getJenisKtpOptions()
     {
-        $row = \DB::select("SHOW COLUMNS FROM pengajuan_ktp WHERE Field='jenis_ktp'")[0];
+        $row = DB::select("SHOW COLUMNS FROM pengajuan_ktp WHERE Field='jenis_ktp'")[0];
         preg_match("/^enum\((.*)\)$/", $row->Type, $matches);
         $values = array_map(fn($val) => trim($val, "'"), explode(',', $matches[1]));
         return $values;

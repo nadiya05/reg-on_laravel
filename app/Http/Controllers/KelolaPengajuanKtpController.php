@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\PengajuanKtp;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
 use PDF; // alias dari barryvdh/laravel-dompdf
 
 class KelolaPengajuanKtpController extends Controller
@@ -70,7 +73,7 @@ class KelolaPengajuanKtpController extends Controller
     $request->validate($rules);
 
     $data = $request->all();
-    $data['user_id'] = auth()->id();
+    $data['user_id'] = Auth::id();
 
     // generate nomor antrean per hari
     $today = now()->toDateString();
@@ -154,7 +157,7 @@ class KelolaPengajuanKtpController extends Controller
     $request->validate($rules);
 
     $data = $request->all();
-    $data['user_id'] = auth()->id(); // optional, kalau mau tetap update user
+    $data['user_id'] = Auth::id(); // optional, kalau mau tetap update user
 
     // Upload file baru kalau ada
     if ($request->hasFile('kk')) {
@@ -179,14 +182,14 @@ class KelolaPengajuanKtpController extends Controller
         $pengajuan = PengajuanKtp::findOrFail($id);
 
         // hapus file kalau ada
-        if ($pengajuan->kk && \Storage::exists('public/' . $pengajuan->kk)) {
-            \Storage::delete('public/' . $pengajuan->kk);
+        if ($pengajuan->kk && Storage::exists('public/' . $pengajuan->kk)) {
+            Storage::delete('public/' . $pengajuan->kk);
         }
-        if ($pengajuan->ijazah_skl && \Storage::exists('public/' . $pengajuan->ijazah_skl)) {
-            \Storage::delete('public/' . $pengajuan->ijazah_skl);
+        if ($pengajuan->ijazah_skl && Storage::exists('public/' . $pengajuan->ijazah_skl)) {
+            Storage::delete('public/' . $pengajuan->ijazah_skl);
         }
-        if ($pengajuan->surat_kehilangan && \Storage::exists('public/' . $pengajuan->surat_kehilangan)) {
-            \Storage::delete('public/' . $pengajuan->surat_kehilangan);
+        if ($pengajuan->surat_kehilangan && Storage::exists('public/' . $pengajuan->surat_kehilangan)) {
+            Storage::delete('public/' . $pengajuan->surat_kehilangan);
         }
 
         $pengajuan->delete();

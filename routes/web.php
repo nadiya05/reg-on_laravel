@@ -8,7 +8,9 @@ use App\Http\Controllers\KelolaInformasiController;
 use App\Http\Controllers\KelolaPengajuanKtpController;
 use App\Http\Controllers\KelolaStatusKtpController;
 use App\Http\Controllers\KelolaPengajuanKiaController;
+use App\Http\Controllers\KelolaPengajuanKkController;
 use App\Http\Controllers\KelolaStatusKiaController;
+use App\Http\Controllers\KelolaStatusKkController;
 
 Route::get('/', function () { return view('auth.masuk'); });
 // Halaman login
@@ -76,5 +78,17 @@ Route::delete('/status/destroy/{id}', [KelolaStatusKiaController::class, 'destro
 Route::get('resume_pengajuan/{id}', [KelolaStatusKiaController::class, 'resume'])->name('resume_pengajuan');
 Route::get('cetak_resume/pdf/{id}', [KelolaStatusKiaController::class, 'cetakResumePdf'])->name('cetak_resume.pdf');
 
+// Kelola Pengajuan KK
+Route::get('/pengajuan-kk', [KelolaPengajuanKkController::class, 'index'])->name('pengajuan-kk.index');
+Route::get('/pengajuan-kk/create', [KelolaPengajuanKkController::class, 'create'])->name('pengajuan-kk.create');
+Route::post('/pengajuan-kk/store', [KelolaPengajuanKkController::class, 'store'])->name('pengajuan-kk.store');
+Route::get('/pengajuan-kk/{id}/edit', [KelolaPengajuanKkController::class, 'edit'])->name('pengajuan-kk.edit');
+Route::put('/pengajuan-kk/{id}', [KelolaPengajuanKkController::class, 'update'])->name('pengajuan-kk.update');
+Route::delete('/pengajuan-kk/{id}', [KelolaPengajuanKkController::class, 'destroy'])->name('pengajuan-kk.destroy');
 
-
+//status-kk
+Route::get('/pengajuan-kk/status', [KelolaStatusKkController::class, 'index'])->name('admin.pengajuan-kk.status');
+Route::post('/pengajuan-kk/status/update/{id}', [KelolaStatusKkController::class, 'updateStatus'])->name('admin.pengajuan-kk.status.update');
+Route::delete('/pengajuan-kk/status/destroy/{id}', [KelolaStatusKkController::class, 'destroy'])->name('admin.pengajuan-kk.status.destroy');
+Route::get('resume_pengajuan/{id}', [KelolaStatusKkController::class, 'resume'])->name('resume_pengajuan');
+Route::get('cetak_resume/pdf/{id}', [KelolaStatusKkController::class, 'cetakResumePdf'])->name('cetak_resume.pdf');

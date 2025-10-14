@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\PengajuanKia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 
 class KelolaPengajuanKiaController extends Controller
@@ -59,7 +61,7 @@ class KelolaPengajuanKiaController extends Controller
         $request->validate($rules);
 
         $data = $request->all();
-        $data['user_id'] = auth()->id();
+        $data['user_id'] = Auth::id();
 
         // generate nomor antrean per hari
         $today = now()->toDateString();
@@ -126,7 +128,7 @@ class KelolaPengajuanKiaController extends Controller
         $request->validate($rules);
 
         $data = $request->all();
-        $data['user_id'] = auth()->id();
+        $data['user_id'] = Auth::id();
 
         // upload file baru kalau ada
         if ($request->hasFile('kk')) {
@@ -160,8 +162,8 @@ class KelolaPengajuanKiaController extends Controller
         // hapus file kalau ada
         $files = ['kk', 'akta_lahir', 'surat_nikah', 'ktp_ortu', 'pass_foto'];
         foreach ($files as $file) {
-            if ($pengajuan->$file && \Storage::exists('public/' . $pengajuan->$file)) {
-                \Storage::delete('public/' . $pengajuan->$file);
+            if ($pengajuan->$file && Storage::exists('public/' . $pengajuan->$file)) {
+                Storage::delete('public/' . $pengajuan->$file);
             }
         }
 

@@ -167,8 +167,8 @@
         <a href="{{ route('admin.kelola-informasi') }}">Kelola Informasi</a>
         <a href="{{ route('admin.pengajuan-ktp.index') }}">Kelola Pengajuan KTP</a>
         <a href="{{ route('pengajuan-ktp.status') }}">Kelola Status KTP</a>
-        <a href="#">Kelola Pengajuan KK</a>
-        <a href="#">Kelola Status KK</a>
+        <a href="{{ route('pengajuan-kk.index') }}">Kelola Pengajuan KK</a>
+        <a href="{{ route('admin.pengajuan-kk.status') }}">Kelola Status KK</a>
         <a href="{{ route('pengajuan-kia.index') }}">Kelola Pengajuan KIA</a>
         <a href="{{ route('admin.pengajuan-kia.status') }}">Kelola status KIA</a>
         <a href="#">Kelola berita</a>

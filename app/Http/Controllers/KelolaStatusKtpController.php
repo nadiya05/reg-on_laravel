@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PengajuanKtp;
 use App\Models\User;
-use PDF;
+use Barryvdh\DomPDF\Facade\PDF;
 
 class KelolaStatusKtpController extends Controller
 {
