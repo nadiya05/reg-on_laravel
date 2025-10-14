@@ -18,7 +18,7 @@ class KelolaInformasiController extends Controller
     public function create()
     {
         // opsi dropdown bisa kamu definisikan di sini
-        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak', 'Ubah Status'];
+        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak dan Ubah Status'];
         $dokumenOptions   = ['KTP', 'KK', 'KIA'];
 
         return view('admin.kelola-informasi.create', compact('pengajuanOptions', 'dokumenOptions'));
@@ -42,7 +42,7 @@ class KelolaInformasiController extends Controller
     public function edit($id)
     {
         $info = Informasi::findOrFail($id);
-        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak', 'Ubah Status'];
+        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak dan Ubah Status'];
         $dokumenOptions   = ['KTP', 'KK', 'KIA'];
 
         return view('admin.kelola-informasi.edit', compact('info', 'pengajuanOptions', 'dokumenOptions'));

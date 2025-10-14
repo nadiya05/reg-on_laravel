@@ -53,9 +53,11 @@ class AuthApiController extends Controller
             ], 401);
         }
 
+        $token = $user->createToken('mobile-token')->plainTextToken;
         return response()->json([
             'message' => 'Login berhasil',
-            'user' => $user
+            'user' => $user,
+            'token' => $token // ⬅️ ini yang dikirim ke Flutter
         ]);
     }
 }

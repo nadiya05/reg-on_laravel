@@ -22,15 +22,21 @@ class KelolaAkunController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nik' => 'required|unique:users',
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'jenis_kelamin' => 'required',
-            'no_telp' => 'required',
-            'password' => 'required|min:6',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $rules = [
+        'name' => 'required',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:6',
+        'role' => 'required',
+        'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ];
+
+    // Jika bukan admin, field ini wajib
+    if ($request->role !== 'admin') {
+        $rules['nik'] = 'required|unique:users';
+        $rules['jenis_kelamin'] = 'required';
+        $rules['no_telp'] = 'required';
+    }
+$request->validate($rules);
 
         $data = $request->except('password', 'foto');
         $data['password'] = Hash::make($request->password);
@@ -56,16 +62,21 @@ class KelolaAkunController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $request->validate([
-            'nik' => 'required|unique:users,nik,' . $id,
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'jenis_kelamin' => 'required',
-            'no_telp' => 'required',
-            'password' => 'nullable|min:6',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $rules = [
+        'name' => 'required',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'role' => 'required',
+        'password' => 'nullable|min:6',
+        'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ];
 
+    // Jika bukan admin, field tambahan wajib
+    if ($request->role !== 'admin') {
+        $rules['nik'] = 'required|unique:users,nik,' . $id;
+        $rules['jenis_kelamin'] = 'required';
+        $rules['no_telp'] = 'required';
+    }
+$request->validate($rules);
         $data = $request->except('password', 'foto');
 
         if ($request->filled('password')) {

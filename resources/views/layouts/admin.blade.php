@@ -165,12 +165,12 @@
         <a href="{{ route('admin.beranda') }}">Beranda</a>
         <a href="{{ route('admin.kelola-akun') }}">Kelola Akun Pengguna</a>
         <a href="{{ route('admin.kelola-informasi') }}">Kelola Informasi</a>
-        <a href="#">Kelola Pengajuan KTP</a>
-        <a href="#">Kelola Status KTP</a>
+        <a href="{{ route('admin.pengajuan-ktp.index') }}">Kelola Pengajuan KTP</a>
+        <a href="{{ route('pengajuan-ktp.status') }}">Kelola Status KTP</a>
         <a href="#">Kelola Pengajuan KK</a>
         <a href="#">Kelola Status KK</a>
-        <a href="#">Kelola Pengajuan KIA</a>
-        <a href="#">Kelola status KIA</a>
+        <a href="{{ route('pengajuan-kia.index') }}">Kelola Pengajuan KIA</a>
+        <a href="{{ route('admin.pengajuan-kia.status') }}">Kelola status KIA</a>
         <a href="#">Kelola berita</a>
         <a href="#">Chat</a>
         <form action="{{ route('keluar') }}" method="POST">
@@ -195,10 +195,16 @@
         </div>
         <div class="d-flex align-items-center">
             <span class="me-3">{{ Auth::user()->name }}</span>
-            <i class="bi bi-person-circle fs-2"></i>
+            @if(Auth::user()->foto)
+                <img src="{{ asset('storage/' . Auth::user()->foto) }}"
+                    alt="Foto Profil"
+                    class="rounded-circle"
+                    style="width: 40px; height: 40px; object-fit: cover; border: 2px solid white;">
+            @else
+                <i class="bi bi-person-circle fs-2"></i>
+            @endif
         </div>
     </div>
-
     <!-- Content -->
     <div class="content full" id="content">
         @yield('content')
