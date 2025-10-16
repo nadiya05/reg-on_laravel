@@ -11,7 +11,7 @@
             {{-- Jenis KK --}}
             <div class="mb-3">
                 <label for="jenis_kk" class="form-label">Jenis KK</label>
-                <select name="jenis_kk" class="form-control" required>
+                <select name="jenis_kk" id="jenis_kk" class="form-control" required>
                     <option value="">-- Pilih Jenis KK --</option>
                     @foreach($jenisKk as $jenis)
                         <option value="{{ $jenis }}" {{ old('jenis_kk') == $jenis ? 'selected' : '' }}>
@@ -43,47 +43,44 @@
                 @error('tanggal_pengajuan') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 
-            {{-- Upload Dokumen --}}
-            <div class="mb-3">
-                <label for="formulir_permohonan_kk" class="form-label">Formulir Permohonan KK</label>
-                <input type="file" name="formulir_permohonan_kk" class="form-control" accept="image/*">
-                @error('formulir_permohonan_kk') <small class="text-danger">{{ $message }}</small> @enderror
+            {{-- Dokumen --}}
+            <div id="dokumen-pemula" style="display:none;">
+                <div class="mb-3">
+                    <label for="formulir_permohonan_kk" class="form-label">Formulir Permohonan KK</label>
+                    <input type="file" name="formulir_permohonan_kk" class="form-control" accept="image/*">
+                </div>
+
+                <div class="mb-3">
+                    <label for="surat_nikah" class="form-label">Surat Nikah</label>
+                    <input type="file" name="surat_nikah" class="form-control" accept="image/*">
+                </div>
+
+                <div class="mb-3">
+                    <label for="surat_keterangan_pindah" class="form-label">Surat Keterangan Pindah Datang</label>
+                    <input type="file" name="surat_keterangan_pindah" class="form-control" accept="image/*">
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label for="surat_nikah" class="form-label">Surat Nikah</label>
-                <input type="file" name="surat_nikah" class="form-control" accept="image/*">
-                @error('surat_nikah') <small class="text-danger">{{ $message }}</small> @enderror
-            </div>
+            <div id="dokumen-ubah-status" style="display:none;">
+                <div class="mb-3">
+                    <label for="kk_asli" class="form-label">KK Asli</label>
+                    <input type="file" name="kk_asli" class="form-control" accept="image/*">
+                </div>
 
-            <div class="mb-3">
-                <label for="surat_keterangan_pindah" class="form-label">Surat Keterangan Pindah</label>
-                <input type="file" name="surat_keterangan_pindah" class="form-control" accept="image/*">
-                @error('surat_keterangan_pindah') <small class="text-danger">{{ $message }}</small> @enderror
-            </div>
+                <div class="mb-3">
+                    <label for="surat_kematian" class="form-label">Surat Kematian</label>
+                    <input type="file" name="surat_kematian" class="form-control" accept="image/*">
+                </div>
 
-            <div class="mb-3">
-                <label for="kk_asli" class="form-label">KK Asli</label>
-                <input type="file" name="kk_asli" class="form-control" accept="image/*">
-                @error('kk_asli') <small class="text-danger">{{ $message }}</small> @enderror
-            </div>
+                <div class="mb-3">
+                    <label for="akta_kelahiran" class="form-label">Akta Kelahiran</label>
+                    <input type="file" name="akta_kelahiran" class="form-control" accept="image/*">
+                </div>
 
-            <div class="mb-3">
-                <label for="surat_kematian" class="form-label">Surat Kematian</label>
-                <input type="file" name="surat_kematian" class="form-control" accept="image/*">
-                @error('surat_kematian') <small class="text-danger">{{ $message }}</small> @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="akta_kelahiran" class="form-label">Akta Kelahiran</label>
-                <input type="file" name="akta_kelahiran" class="form-control" accept="image/*">
-                @error('akta_kelahiran') <small class="text-danger">{{ $message }}</small> @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="ijazah" class="form-label">Ijazah</label>
-                <input type="file" name="ijazah" class="form-control" accept="image/*">
-                @error('ijazah') <small class="text-danger">{{ $message }}</small> @enderror
+                <div class="mb-3">
+                    <label for="ijazah" class="form-label">Ijazah</label>
+                    <input type="file" name="ijazah" class="form-control" accept="image/*">
+                </div>
             </div>
 
             {{-- Tombol --}}
@@ -92,4 +89,22 @@
         </form>
     </div>
 </div>
+
+{{-- Script untuk menampilkan dokumen sesuai pilihan --}}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const jenisSelect = document.getElementById('jenis_kk');
+    const pemulaSection = document.getElementById('dokumen-pemula');
+    const ubahStatusSection = document.getElementById('dokumen-ubah-status');
+
+    function toggleDokumen() {
+        const value = jenisSelect.value.toLowerCase();
+        pemulaSection.style.display = value === 'pemula' ? 'block' : 'none';
+        ubahStatusSection.style.display = value === 'ubah status' ? 'block' : 'none';
+    }
+
+    jenisSelect.addEventListener('change', toggleDokumen);
+    toggleDokumen(); // biar langsung sesuai kalau old value ada
+});
+</script>
 @endsection
