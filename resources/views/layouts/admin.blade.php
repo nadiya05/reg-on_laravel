@@ -171,7 +171,7 @@
         <a href="{{ route('admin.pengajuan-kk.status') }}">Kelola Status KK</a>
         <a href="{{ route('pengajuan-kia.index') }}">Kelola Pengajuan KIA</a>
         <a href="{{ route('admin.pengajuan-kia.status') }}">Kelola status KIA</a>
-        <a href="#">Kelola berita</a>
+        <a href="{{ route('admin.kelola-berita.index') }}">Kelola berita</a>
         <a href="#">Chat</a>
         <form action="{{ route('keluar') }}" method="POST">
             @csrf

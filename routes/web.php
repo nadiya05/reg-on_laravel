@@ -11,6 +11,7 @@ use App\Http\Controllers\KelolaPengajuanKiaController;
 use App\Http\Controllers\KelolaPengajuanKkController;
 use App\Http\Controllers\KelolaStatusKiaController;
 use App\Http\Controllers\KelolaStatusKkController;
+use App\Http\Controllers\KelolaBeritaController;
 
 Route::get('/', function () { return view('auth.masuk'); });
 // Halaman login
@@ -96,3 +97,11 @@ Route::get('resume_pengajuan/kk/{id}', [KelolaStatusKkController::class, 'resume
     ->name('resume_pengajuan.kk');
 Route::get('cetak_resume/kk/pdf/{id}', [KelolaStatusKkController::class, 'cetakResumePdf'])
     ->name('cetak_resume.kk.pdf');
+
+//kelola-berita
+Route::get('kelola-berita', [KelolaBeritaController::class, 'index'])->name('admin.kelola-berita.index');
+Route::get('kelola-berita/create', [KelolaBeritaController::class, 'create'])->name('admin.kelola-berita.create');
+Route::post('kelola-berita', [KelolaBeritaController::class, 'store'])->name('admin.kelola-berita.store');
+Route::get('kelola-berita/{id}/edit', [KelolaBeritaController::class, 'edit'])->name('admin.kelola-berita.edit');
+Route::put('kelola-berita/{id}', [KelolaBeritaController::class, 'update'])->name('admin.kelola-berita.update');
+Route::delete('kelola-berita/{id}', [KelolaBeritaController::class, 'destroy'])->name('admin.kelola-berita.destroy');
