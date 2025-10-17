@@ -29,7 +29,7 @@
                 <td>{{ $item->jenis_ktp }}</td>
                 <td>{{ $item->tanggal_pengajuan }}</td>
                 <td>
-                    <a href="{{ route('resume_pengajuan', $item->id) }}">
+                    <a href="{{ route('resume_pengajuan.ktp', $item->id) }}">
                         <button class="btn btn-sm btn-primary">Lihat Resume</button>
                     </a>
                 </td>

@@ -55,9 +55,10 @@ Route::put('/admin/pengajuan-ktp/{id}', [KelolaPengajuanKtpController::class, 'u
 Route::delete('/admin/pengajuan-ktp/{id}', [KelolaPengajuanKtpController::class, 'destroy'])->name('admin.pengajuan-ktp.destroy');
 
 // Resume
-Route::get('resume_pengajuan/{id}', [KelolaStatusKtpController::class, 'resume'])->name('resume_pengajuan');
-Route::get('cetak_resume/pdf/{id}', [KelolaStatusKtpController::class, 'cetakResumePdf'])->name('cetak_resume.pdf');
-
+Route::get('resume_pengajuan/ktp/{id}', [KelolaStatusKtpController::class, 'resume'])
+    ->name('resume_pengajuan.ktp');
+Route::get('cetak_resume/ktp/pdf/{id}', [KelolaStatusKtpController::class, 'cetakResumePdf'])
+    ->name('cetak_resume.ktp.pdf');
 //Status-ktp
 Route::get('/pengajuan-ktp/status', [KelolaStatusKtpController::class, 'index'])->name('pengajuan-ktp.status');
 Route::post('/pengajuan-ktp/status/update/{id}', [KelolaStatusKtpController::class, 'updateStatus'])->name('pengajuan-ktp.status.update');
@@ -75,9 +76,10 @@ Route::delete('/pengajuan-kia/{id}', [KelolaPengajuanKiaController::class, 'dest
 Route::get('/status', [KelolaStatusKiaController::class, 'index'])->name('admin.pengajuan-kia.status');
 Route::post('/status/update/{id}', [KelolaStatusKiaController::class, 'updateStatus'])->name('admin.pengajuan-kia.status.update');
 Route::delete('/status/destroy/{id}', [KelolaStatusKiaController::class, 'destroy'])->name('admin.pengajuan-kia.status.destroy');
-Route::get('resume_pengajuan/{id}', [KelolaStatusKiaController::class, 'resume'])->name('resume_pengajuan');
-Route::get('cetak_resume/pdf/{id}', [KelolaStatusKiaController::class, 'cetakResumePdf'])->name('cetak_resume.pdf');
-
+Route::get('resume_pengajuan/kia/{id}', [KelolaStatusKiaController::class, 'resume'])
+    ->name('resume_pengajuan.kia');
+Route::get('cetak_resume/kia/pdf/{id}', [KelolaStatusKiaController::class, 'cetakResumePdf'])
+    ->name('cetak_resume.kia.pdf');
 // Kelola Pengajuan KK
 Route::get('/pengajuan-kk', [KelolaPengajuanKkController::class, 'index'])->name('pengajuan-kk.index');
 Route::get('/pengajuan-kk/create', [KelolaPengajuanKkController::class, 'create'])->name('pengajuan-kk.create');
@@ -90,5 +92,7 @@ Route::delete('/pengajuan-kk/{id}', [KelolaPengajuanKkController::class, 'destro
 Route::get('/pengajuan-kk/status', [KelolaStatusKkController::class, 'index'])->name('admin.pengajuan-kk.status');
 Route::post('/pengajuan-kk/status/update/{id}', [KelolaStatusKkController::class, 'updateStatus'])->name('admin.pengajuan-kk.status.update');
 Route::delete('/pengajuan-kk/status/destroy/{id}', [KelolaStatusKkController::class, 'destroy'])->name('admin.pengajuan-kk.status.destroy');
-Route::get('resume_pengajuan/{id}', [KelolaStatusKkController::class, 'resume'])->name('resume_pengajuan');
-Route::get('cetak_resume/pdf/{id}', [KelolaStatusKkController::class, 'cetakResumePdf'])->name('cetak_resume.pdf');
+Route::get('resume_pengajuan/kk/{id}', [KelolaStatusKkController::class, 'resume'])
+    ->name('resume_pengajuan.kk');
+Route::get('cetak_resume/kk/pdf/{id}', [KelolaStatusKkController::class, 'cetakResumePdf'])
+    ->name('cetak_resume.kk.pdf');

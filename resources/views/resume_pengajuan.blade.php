@@ -39,9 +39,13 @@
 
         {{-- 🔹 Tombol cetak PDF --}}
         <div class="text-center mt-4">
-            <a href="{{ route('cetak_resume.pdf', $pengajuan->id) }}" class="btn btn-primary">
-                Cetak
-            </a>
+            @if(isset($pengajuan->jenis_ktp))
+                <a href="{{ route('cetak_resume.ktp.pdf', $pengajuan->id) }}" class="btn btn-primary">Cetak</a>
+            @elseif(isset($pengajuan->jenis_kia))
+                <a href="{{ route('cetak_resume.kia.pdf', $pengajuan->id) }}" class="btn btn-primary">Cetak</a>
+            @elseif(isset($pengajuan->jenis_kk))
+                <a href="{{ route('cetak_resume.kk.pdf', $pengajuan->id) }}" class="btn btn-primary">Cetak</a>
+            @endif
         </div>
     </div>
 </div>

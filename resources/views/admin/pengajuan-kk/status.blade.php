@@ -34,7 +34,7 @@
 
                 {{-- 🔹 Tombol Lihat Resume --}}
                 <td>
-                    <a href="{{ route('resume_pengajuan', $item->id) }}">
+                    <a href="{{ route('resume_pengajuan.kk', $item->id) }}">
                         <button class="btn btn-sm btn-primary">Lihat Resume</button>
                     </a>
                 </td>

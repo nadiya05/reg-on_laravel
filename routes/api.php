@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/informasi_kia', [InformasiKiaController::class, 'index']);
     Route::get('/pengajuan-kia/pemula', [PengajuanKiaController::class, 'index']);
     Route::post('/pengajuan-kia', [PengajuanKiaController::class, 'store']);
-    Route::get('/pengajuan-kia/{id}', [PengajuanKiaController::class, 'show']);
+    Route::get('/pengajuan_kia/{id}', [PengajuanKiaController::class, 'show']);
     Route::delete('/pengajuan-kia/{id}', [PengajuanKiaController::class, 'destroy']);
     Route::get('/status_pengajuan_kia', [StatusPengajuanKiaController::class, 'index']);
     Route::get('/status_pengajuan_kia/{id}', [StatusPengajuanKiaController::class, 'resume']);
