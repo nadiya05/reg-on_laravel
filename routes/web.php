@@ -30,6 +30,7 @@ Route::get('/beranda', function () {
 
 // Beranda admin
 Route::get('/admin/beranda', [BerandaController::class, 'index'])->name('admin.beranda');
+Route::get('/admin/beranda/pdf', [BerandaController::class, 'downloadPdf'])->name('admin.beranda.pdf');
 
 // Kelola Akun Pengguna
 Route::get('/admin/kelola-akun', [KelolaAkunController::class, 'index'])->name('admin.kelola-akun');
