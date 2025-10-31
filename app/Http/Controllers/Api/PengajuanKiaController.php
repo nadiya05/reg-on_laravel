@@ -46,7 +46,7 @@ class PengajuanKiaController extends Controller
         $user = $request->user();
         $tanggal = $request->tanggal_pengajuan;
 
-        // Nomor antrean berdasarkan tanggal yang dipilih
+        // Nomor antrean berdasarkan tanggal pengajuan
         $last = PengajuanKia::whereDate('tanggal_pengajuan', $tanggal)
             ->orderBy('nomor_antrean', 'desc')
             ->first();
@@ -90,20 +90,27 @@ class PengajuanKiaController extends Controller
     }
 
     /**
-     * 🔹 Detail pengajuan KIA berdasarkan ID.
+     * 🔹 Tampilkan detail pengajuan KIA berdasarkan ID.
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $kia = PengajuanKia::where('user_id', auth()->id())->find($id);
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan atau token tidak valid.'
+            ], 401);
+        }
+
+        $kia = PengajuanKia::where('user_id', $user->id)->find($id);
 
         if (!$kia) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak ditemukan atau bukan milik Anda'
+                'message' => 'Data tidak ditemukan atau bukan milik Anda.'
             ], 404);
         }
-
-        $user = auth()->user();
 
         return response()->json([
             'success' => true,
@@ -112,12 +119,12 @@ class PengajuanKiaController extends Controller
                 'nik' => $kia->nik,
                 'nama' => $kia->nama,
                 'email' => $user->email,
-                'no_hp' => $user->no_telp ?? '-',
+                'no_telp' => $user->no_telp ?? '-',
                 'jenis_kia' => $kia->jenis_kia,
                 'tanggal_pengajuan' => $kia->tanggal_pengajuan,
                 'status' => $kia->status,
             ]
-        ]);
+        ], 200);
     }
 
     /**
@@ -135,6 +142,7 @@ class PengajuanKiaController extends Controller
             return response()->json(['message' => 'Data tidak dapat dihapus setelah diverifikasi'], 403);
         }
 
+        // Hapus file yang diupload
         foreach (['kk', 'akta_lahir', 'surat_nikah', 'ktp_ortu', 'pass_foto'] as $file) {
             if ($kia->$file && Storage::exists('public/' . $kia->$file)) {
                 Storage::delete('public/' . $kia->$file);

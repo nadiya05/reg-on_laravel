@@ -8,11 +8,25 @@ use Illuminate\Http\Request;
 class KelolaInformasiController extends Controller
 {
     // Tampilkan semua data
-    public function index()
-    {
-        $informasi = Informasi::all();
-        return view('admin.kelola-informasi.index', compact('informasi'));
+   public function index(Request $request)
+{
+    $query = Informasi::query();
+
+    // fitur search (kaya di pengajuan KTP)
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('jenis_pengajuan', 'like', "%{$search}%")
+              ->orWhere('jenis_dokumen', 'like', "%{$search}%")
+              ->orWhere('deskripsi', 'like', "%{$search}%");
+        });
     }
+
+    $informasi = $query->orderBy('id', 'desc')->paginate(10);
+
+    return view('admin.kelola-informasi.index', compact('informasi'));
+}
+
 
     // Form tambah
     public function create()

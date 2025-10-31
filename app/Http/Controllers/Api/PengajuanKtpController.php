@@ -123,30 +123,37 @@ class PengajuanKtpController extends Controller
     }
 
     // 🔹 Tampilkan data pengajuan KTP berdasarkan ID
-public function show($id)
-{
-    $ktp = PengajuanKtp::where('user_id', auth()->id())->find($id);
+public function show($id, Request $request)
+    {
+        $user = $request->user();
 
-    if (!$ktp) {
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User tidak ditemukan atau token tidak valid.'
+            ], 401);
+        }
+
+        $ktp = PengajuanKtp::where('user_id', $user->id)->find($id);
+
+        if (!$ktp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan atau bukan milik Anda.'
+            ], 404);
+        }
+
         return response()->json([
-            'success' => false,
-            'message' => 'Data tidak ditemukan atau bukan milik Anda'
-        ], 404);
+            'success' => true,
+            'data' => [
+                'nomor_antrean' => str_pad($ktp->nomor_antrean, 3, '0', STR_PAD_LEFT),
+                'nik' => $ktp->nik,
+                'nama' => $ktp->nama,
+                'email' => $user->email,
+                'no_telp' => $user->no_telp ?? '-',
+                'jenis_ktp' => $ktp->jenis_ktp,
+                'tanggal_pengajuan' => $ktp->tanggal_pengajuan,
+            ]
+        ], 200);
     }
-
-    $user = auth()->user();
-
-    return response()->json([
-        'success' => true,
-        'data' => [
-            'nomor_antrean' => str_pad($ktp->nomor_antrean, 3, '0', STR_PAD_LEFT),
-            'nik' => $ktp->nik,
-            'nama' => $ktp->nama,
-            'email' => $user->email,
-            'no_hp' => $user->no_telp ?? '-',
-            'jenis_ktp' => $ktp->jenis_ktp,
-            'tanggal_pengajuan' => $ktp->tanggal_pengajuan,
-        ]
-    ]);
-}
 }

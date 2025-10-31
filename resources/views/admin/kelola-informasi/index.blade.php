@@ -8,10 +8,17 @@
         <a href="{{ route('admin.kelola-informasi.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Tambah Informasi
         </a>
-        <form action="" method="GET">
-            <input type="text" name="search" class="form-control" placeholder="Cari..." style="max-width: 200px;">
-        </form>
     </div>
+    <div class="d-flex justify-content-end mb-3">
+    <form action="{{ route('admin.kelola-informasi') }}" method="GET" class="d-flex">
+        <input type="text" name="search" value="{{ request('search') }}"
+               class="form-control me-2" placeholder="Cari Jenis / Dokumen / Deskripsi"
+               style="max-width: 250px;">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Cari
+        </button>
+    </form>
+</div>
 
     <x-table>
     <x-slot name="head">
@@ -51,5 +58,10 @@
         @endforelse
     </x-slot>
 </x-table>
+   {{-- Baris pagination --}}
+    <div>
+        {{ $informasi->links('pagination::bootstrap-5') }}
+    </div>
+</div>
 </div>
 @endsection

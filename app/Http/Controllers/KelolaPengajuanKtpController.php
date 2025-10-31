@@ -21,18 +21,21 @@ class KelolaPengajuanKtpController extends Controller
         $query = PengajuanKtp::query();
 
         // fitur search
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where('nama', 'like', "%$search%")
-                  ->orWhere('nik', 'like', "%$search%")
-                  ->orWhere('jenis_ktp', 'like', "%$search%");
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                ->orWhere('nik', 'like', "%{$search}%")
+                ->orWhere('jenis_ktp', 'like', "%{$search}%")
+                ->orWhere('nomor_antrean', 'like', "%{$search}%");
+            });
         }
 
-        $pengajuan = $query->latest()->paginate(10);
+        $pengajuan = $query->orderBy('tanggal_pengajuan', 'desc')
+                        ->paginate(10);
 
         return view('admin.pengajuan-ktp.index', compact('pengajuan'));
     }
-
     /**
      * Form tambah data.
      */
@@ -156,9 +159,8 @@ class KelolaPengajuanKtpController extends Controller
 
     $request->validate($rules);
 
-    $data = $request->all();
-    $data['user_id'] = Auth::id(); // optional, kalau mau tetap update user
-
+    $data = $request->except('user_id'); 
+    
     // Upload file baru kalau ada
     if ($request->hasFile('kk')) {
         $data['kk'] = $request->file('kk')->store('dokumen/kk', 'public');

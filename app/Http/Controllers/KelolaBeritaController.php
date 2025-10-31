@@ -9,12 +9,18 @@ use Illuminate\Support\Facades\Storage;
 class KelolaBeritaController extends Controller
 {
     // 📝 Tampilkan semua data berita
-    public function index()
+    public function index(Request $request)
     {
-        $berita = Berita::all();
+        $search = $request->input('search');
+
+        $berita = Berita::when($search, function ($query, $search) {
+            return $query->where('judul', 'like', "%{$search}%");
+        })
+        ->orderBy('tanggal', 'desc')
+        ->paginate(5); // bisa ubah ke 10 kalau mau
+
         return view('admin.kelola-berita.index', compact('berita'));
     }
-
     // ➕ Form tambah berita
     public function create()
     {

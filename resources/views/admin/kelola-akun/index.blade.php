@@ -8,10 +8,17 @@
         <a href="{{ route('admin.kelola-akun.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Tambah Pengguna
         </a>
-        <form action="" method="GET">
-            <input type="text" name="search" class="form-control" placeholder="Cari..." style="max-width: 200px;">
-        </form>
     </div>
+<div class="d-flex justify-content-end mb-3">
+    <form action="{{ route('admin.kelola-akun') }}" method="GET" class="d-flex">
+        <input type="text" name="search" value="{{ request('search') }}"
+               class="form-control me-2" placeholder="Cari Nama / NIK / Email / Role"
+               style="max-width: 250px;">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-search"></i> Cari
+        </button>
+    </form>
+</div>
 
     {{-- Pakai komponen table --}}
     <x-table>
@@ -67,5 +74,10 @@
             @endforelse
         </x-slot>
     </x-table>
+       {{-- Baris pagination --}}
+    <div>
+        {{ $users->links('pagination::bootstrap-5') }}
+    </div>
+</div>
 </div>
 @endsection

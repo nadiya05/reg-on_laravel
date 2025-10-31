@@ -12,12 +12,27 @@ class KelolaStatusKkController extends Controller
     /**
      * 🔹 Tampilkan daftar pengajuan KK beserta statusnya.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = PengajuanKk::select('id', 'nik', 'nama', 'jenis_kk', 'tanggal_pengajuan', 'status')->get();
+        $query = PengajuanKk::select('id', 'nik', 'nama', 'jenis_kk', 'tanggal_pengajuan', 'status');
+
+        // 🔍 Fitur pencarian
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nik', 'like', "%{$search}%")
+                ->orWhere('nama', 'like', "%{$search}%")
+                ->orWhere('jenis_kk', 'like', "%{$search}%");
+            });
+        }
+
+        // 🔢 Pagination
+        $data = $query->orderBy('tanggal_pengajuan', 'desc')
+                    ->paginate(10)
+                    ->withQueryString(); // biar pagination tetap bawa query pencarian
+
         return view('admin.pengajuan-kk.status', compact('data'));
     }
-
     /**
      * 🔹 Ubah status pengajuan KK langsung dari dropdown.
      */
@@ -40,7 +55,7 @@ class KelolaStatusKkController extends Controller
     {
         $pengajuan = PengajuanKk::findOrFail($id);
         $user = User::findOrFail($pengajuan->user_id);
-        return view('resume_pengajuan', compact('pengajuan', 'user'));
+        return view('admin.pengajuan-kk.resume_pengajuan', compact('pengajuan', 'user'));
     }
 
     /**
@@ -51,7 +66,7 @@ class KelolaStatusKkController extends Controller
         $pengajuan = PengajuanKk::findOrFail($id);
         $user = User::findOrFail($pengajuan->user_id);
 
-        $pdf = PDF::loadView('cetak_resume_kk', compact('pengajuan', 'user'))
+        $pdf = PDF::loadView('admin.pengajuan-kk.cetak_resume_kk', compact('pengajuan', 'user'))
                 ->setPaper('A4', 'portrait');
 
         $fileName = 'Resume_KK_' . $pengajuan->nomor_antrean . '.pdf';

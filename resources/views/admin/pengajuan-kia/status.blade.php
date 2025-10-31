@@ -2,12 +2,24 @@
 
 @section('content')
 <div class="container">
-    <h3 class="mb-4 ">Daftar Pengajuan KIA</h3>
+    <h3 class="mb-4">Status Pengajuan KIA</h3>
 
     {{-- ✅ Notifikasi sukses --}}
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+
+    {{-- 🔍 Form pencarian --}}
+    <div class="d-flex justify-content-end mb-3">
+        <form action="{{ route('admin.pengajuan-kia.status') }}" method="GET" class="d-flex">
+            <input type="text" name="search" value="{{ request('search') }}" 
+                   class="form-control me-2" placeholder="Cari NIK / Nama / Jenis KIA / Status" 
+                   style="max-width: 280px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i> Cari
+            </button>
+        </form>
+    </div>
 
     {{-- ✅ Tabel Pengajuan KIA --}}
     <x-table>
@@ -25,7 +37,7 @@
         </x-slot>
 
         <x-slot name="body">
-            @foreach($data as $item)
+            @forelse($data as $item)
             <tr>
                 <td>{{ $item->nik }}</td>
                 <td>{{ $item->nama }}</td>
@@ -39,15 +51,15 @@
                     </a>
                 </td>
 
-                {{-- 🔹 Badge status (fix warna sesuai status) --}}
+                {{-- 🔹 Badge status --}}
                 <td class="text-center">
                     @php
-                        $status = strtolower(trim($item->status)); // normalize biar ga sensitif huruf besar/kecil
+                        $status = strtolower(trim($item->status));
                         $badgeClass = match($status) {
-                            'selesai' => 'background-color: #28a745; color: white;', // hijau
-                            'ditolak' => 'background-color: #dc3545; color: white;', // merah
-                            'sedang diproses' => 'background-color: #ffc107; color: black;', // kuning
-                            default => 'background-color: #6c757d; color: white;', // abu
+                            'selesai' => 'background-color: #28a745; color: white;',
+                            'ditolak' => 'background-color: #dc3545; color: white;',
+                            'sedang diproses' => 'background-color: #ffc107; color: black;',
+                            default => 'background-color: #6c757d; color: white;',
                         };
                     @endphp
                     <span style="{{ $badgeClass }} padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
@@ -77,8 +89,17 @@
                     </form>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="8" class="text-center">Belum ada pengajuan</td>
+            </tr>
+            @endforelse
         </x-slot>
     </x-table>
+
+    {{-- 🔢 Pagination --}}
+    <div class="mt-3">
+        {{ $data->appends(['search' => request('search')])->links('pagination::bootstrap-5') }}
+    </div>
 </div>
 @endsection

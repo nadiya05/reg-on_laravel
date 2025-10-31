@@ -18,19 +18,24 @@ class KelolaPengajuanKiaController extends Controller
     {
         $query = PengajuanKia::query();
 
-        // fitur search
-        if ($request->has('search')) {
+        // 🔍 Fitur pencarian
+        if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where('nama', 'like', "%$search%")
-                  ->orWhere('nik', 'like', "%$search%")
-                  ->orWhere('jenis_kia', 'like', "%$search%");
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                ->orWhere('nik', 'like', "%{$search}%")
+                ->orWhere('jenis_kia', 'like', "%{$search}%")
+                ->orWhere('nomor_antrean', 'like', "%{$search}%");
+            });
         }
 
-        $pengajuan = $query->latest()->paginate(10);
+        // 🔢 Pagination + urut terbaru
+        $pengajuan = $query->orderBy('tanggal_pengajuan', 'desc')
+                        ->paginate(10)
+                        ->withQueryString(); // biar pagination tetap bawa kata pencarian
 
         return view('admin.pengajuan-kia.index', compact('pengajuan'));
     }
-
     /**
      * Form tambah data.
      */
@@ -127,8 +132,7 @@ class KelolaPengajuanKiaController extends Controller
 
         $request->validate($rules);
 
-        $data = $request->all();
-        $data['user_id'] = Auth::id();
+        $data = $request->except('user_id'); // biar user_id lama gak ketimpa
 
         // upload file baru kalau ada
         if ($request->hasFile('kk')) {

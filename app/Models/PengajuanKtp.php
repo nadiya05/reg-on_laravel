@@ -14,7 +14,7 @@ class PengajuanKtp extends Model
 
     protected $fillable = [
         'status', 'user_id', 'nomor_antrean', 'jenis_ktp', 'nik', 'nama', 'tanggal_pengajuan',
-        'kk', 'ijazah_skl', 'surat_kehilangan'
+        'kk', 'ijazah_skl', 'surat_kehilangan', 'keterangan'
     ];
 
     public static function getJenisKtpOptions()

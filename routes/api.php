@@ -13,6 +13,10 @@ use App\Http\Controllers\Api\StatusPengajuanKiaController;
 use App\Http\Controllers\Api\InformasiKkController;
 use App\Http\Controllers\Api\PengajuanKkController;
 use App\Http\Controllers\Api\StatusPengajuanKkController;
+use App\Http\Controllers\Api\BeritaController;
+use App\Http\Controllers\Api\StatusPengajuanAllController;
+
+
 
 // Route untuk API Users
 Route::apiResource('users', UserController::class);
@@ -45,4 +49,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pengajuan_kk/{id}', [PengajuanKkController::class, 'show']);
     Route::get('/status_pengajuan_kk', [StatusPengajuanKkController::class, 'index']);
     Route::get('/status_pengajuan_kk/{id}', [StatusPengajuanKkController::class, 'resume']);
+    Route::get('/berita', [BeritaController::class, 'index']); // semua berita
+    Route::get('/berita/{id}', [BeritaController::class, 'show']); // detail berita
+    Route::get('/status_pengajuan_all', [StatusPengajuanAllController::class, 'index']);
 });

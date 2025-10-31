@@ -12,12 +12,27 @@ class KelolaStatusKiaController extends Controller
     /**
      * 🔹 Tampilkan daftar pengajuan KIA beserta statusnya.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = PengajuanKia::select('id', 'nik', 'nama', 'jenis_kia', 'tanggal_pengajuan', 'status')->get();
+        $query = PengajuanKia::select('id', 'nik', 'nama', 'jenis_kia', 'tanggal_pengajuan', 'status');
+
+        // 🔍 fitur pencarian
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%$search%")
+                ->orWhere('nik', 'like', "%$search%")
+                ->orWhere('jenis_kia', 'like', "%$search%")
+                ->orWhere('status', 'like', "%$search%");
+            });
+        }
+
+        // 🔢 urut & paginate
+        $data = $query->orderBy('tanggal_pengajuan', 'desc')->paginate(10);
+
+        // kirim ke view
         return view('admin.pengajuan-kia.status', compact('data'));
     }
-
     /**
      * 🔹 Ubah status pengajuan KIA langsung dari dropdown.
      */

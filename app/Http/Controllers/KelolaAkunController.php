@@ -9,11 +9,27 @@ use Illuminate\Support\Facades\Storage;
 
 class KelolaAkunController extends Controller
 {
-    public function index()
-    {
-        $users = User::all(); 
-        return view('admin.kelola-akun.index', compact('users'));
+public function index(Request $request)
+{
+    $query = User::query();
+
+    // fitur search (kayak di pengajuan KTP)
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('nik', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('role', 'like', "%{$search}%");
+        });
     }
+
+    // urutkan terbaru & pagination
+    $users = $query->orderBy('id', 'desc')->paginate(10);
+
+    return view('admin.kelola-akun.index', compact('users'));
+}
+
 
     public function create()
     {

@@ -2,12 +2,23 @@
 
 @section('content')
 <div class="container">
-    <h3 class="mb-4 ">Daftar Pengajuan KK</h3>
+    <h3 class="mb-4">Status Pengajuan KK</h3>
 
     {{-- ✅ Notifikasi sukses --}}
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+
+    {{-- 🔍 Form Pencarian --}}
+    <div class="d-flex justify-content-end mb-3">
+        <form action="{{ route('admin.pengajuan-kk.status') }}" method="GET" class="d-flex">
+            <input type="text" name="search" value="{{ request('search') }}" class="form-control me-2"
+                placeholder="Cari NIK / Nama / Jenis KK" style="max-width: 280px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i> Cari
+            </button>
+        </form>
+    </div>
 
     {{-- ✅ Tabel Pengajuan KK --}}
     <x-table>
@@ -25,7 +36,7 @@
         </x-slot>
 
         <x-slot name="body">
-            @foreach($data as $item)
+            @forelse($data as $item)
             <tr>
                 <td>{{ $item->nik }}</td>
                 <td>{{ $item->nama }}</td>
@@ -34,9 +45,7 @@
 
                 {{-- 🔹 Tombol Lihat Resume --}}
                 <td>
-                    <a href="{{ route('resume_pengajuan.kk', $item->id) }}">
-                        <button class="btn btn-sm btn-primary">Lihat Resume</button>
-                    </a>
+                    <a href="{{ route('resume_pengajuan.kk', $item->id) }}" class="btn btn-sm btn-primary">Lihat Resume</a>
                 </td>
 
                 {{-- 🔹 Badge status --}}
@@ -77,8 +86,17 @@
                     </form>
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="8" class="text-center">Belum ada pengajuan</td>
+            </tr>
+            @endforelse
         </x-slot>
     </x-table>
+
+    {{-- 🔢 Baris pagination --}}
+    <div>
+        {{ $data->links('pagination::bootstrap-5') }}
+    </div>
 </div>
 @endsection

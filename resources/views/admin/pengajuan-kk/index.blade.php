@@ -8,11 +8,17 @@
         <a href="{{ route('pengajuan-kk.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Tambah Pengajuan
         </a>
-        <form action="" method="GET">
-            <input type="text" name="search" class="form-control" placeholder="Cari..." style="max-width: 200px;">
+            {{-- Form Pencarian --}}
+    </div>
+<div class="d-flex justify-content-end mb-3">
+        <form action="{{ route('pengajuan-kk.index') }}" method="GET" class="d-flex">
+            <input type="text" name="search" value="{{ request('search') }}" class="form-control me-2"
+                placeholder="Cari NIK / Nama / Jenis KK / Nomor Antrean" style="max-width: 280px;">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i> Cari
+            </button>
         </form>
     </div>
-
     <x-table>
         <x-slot name="head">
             <tr>
@@ -127,5 +133,9 @@
             @endforelse
         </x-slot>
     </x-table>
+  {{-- Pagination --}}
+    <div>
+        {{ $pengajuan->links('pagination::bootstrap-5') }}
+    </div>
 </div>
 @endsection

@@ -12,26 +12,41 @@ class KelolaStatusKtpController extends Controller
     /**
      * Tampilkan daftar pengajuan KTP beserta statusnya.
      */
-    public function index()
-    {
-        $data = PengajuanKtp::select('id', 'nik', 'nama', 'jenis_ktp', 'tanggal_pengajuan', 'status')->get();
-        return view('admin.pengajuan-ktp.status', compact('data'));
-    }
+        public function index(Request $request)
+        {
+            $query = PengajuanKtp::select('id', 'nik', 'nama', 'jenis_ktp', 'tanggal_pengajuan', 'status', 'keterangan');
 
-    /**
-     * Ubah status pengajuan KTP langsung dari dropdown.
-     */
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:sedang diproses,selesai,ditolak',
-        ]);
+            if ($request->has('search') && !empty($request->search)) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->where('nik', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhere('jenis_ktp', 'like', "%{$search}%");
+                });
+            }
 
-        $pengajuan = PengajuanKtp::findOrFail($id);
-        $pengajuan->update(['status' => $request->status]);
+            $data = $query->orderBy('tanggal_pengajuan', 'desc')
+                        ->paginate(10)
+                        ->appends(['search' => $request->search]);
 
-        return redirect()->back()->with('success', 'Status berhasil diperbarui!');
-    }
+            return view('admin.pengajuan-ktp.status', compact('data'));
+        }
+        public function updateStatus(Request $request, $id)
+        {
+            $request->validate([
+                'status' => 'required|string|in:sedang diproses,selesai,ditolak',
+                'keterangan' => 'nullable|string|max:255',
+            ]);
+
+            $pengajuan = PengajuanKtp::findOrFail($id);
+            $pengajuan->status = $request->status;
+            $pengajuan->keterangan = $request->keterangan ?? null;
+            $pengajuan->save();
+
+            return redirect()
+                ->route('pengajuan-ktp.status')
+                ->with('success', 'Status pengajuan berhasil diperbarui.');
+        }
 
     /**
      * Tampilkan resume pengajuan tertentu.

@@ -14,22 +14,27 @@ class KelolaPengajuanKkController extends Controller
     /**
      * Tampilkan daftar pengajuan KK.
      */
-    public function index(Request $request)
-    {
-        $query = PengajuanKk::query();
+   public function index(Request $request)
+{
+    $query = PengajuanKk::query();
 
-        // Fitur pencarian
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where('nama', 'like', "%$search%")
-                  ->orWhere('nik', 'like', "%$search%")
-                  ->orWhere('jenis_kk', 'like', "%$search%");
-        }
-
-        $pengajuan = $query->latest()->paginate(10);
-
-        return view('admin.pengajuan-kk.index', compact('pengajuan'));
+    // fitur search
+    if ($request->has('search') && $request->search != '') {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('nama', 'like', "%{$search}%")
+              ->orWhere('nik', 'like', "%{$search}%")
+              ->orWhere('jenis_kk', 'like', "%{$search}%")
+              ->orWhere('nomor_antrean', 'like', "%{$search}%");
+        });
     }
+
+    $pengajuan = $query->orderBy('tanggal_pengajuan', 'desc')
+                       ->paginate(10)
+                       ->withQueryString();
+
+    return view('admin.pengajuan-kk.index', compact('pengajuan'));
+}
 
     /**
      * Form tambah pengajuan KK.
@@ -130,8 +135,7 @@ class KelolaPengajuanKkController extends Controller
 
         $request->validate($rules);
 
-        $data = $request->all();
-        $data['user_id'] = Auth::id();
+        $data = $request->except('user_id'); 
 
         // Upload dokumen baru jika ada
         $fileFields = [

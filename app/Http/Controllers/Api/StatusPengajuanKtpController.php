@@ -15,16 +15,14 @@ class StatusPengajuanKtpController extends Controller
     {
         $user = $request->user();
 
-        // Cegah error jika token tidak valid / user null
         if (!$user) {
             return response()->json([
                 'message' => 'User tidak ditemukan atau token tidak valid.'
             ], 401);
         }
 
-        // Ambil semua pengajuan milik user ini
         $data = PengajuanKtp::where('user_id', $user->id)
-            ->select('id', 'nik', 'nama', 'jenis_ktp', 'status', 'tanggal_pengajuan')
+            ->select('id', 'nik', 'nama', 'jenis_ktp', 'status', 'keterangan', 'tanggal_pengajuan')
             ->orderBy('tanggal_pengajuan', 'desc')
             ->get();
 
@@ -36,7 +34,7 @@ class StatusPengajuanKtpController extends Controller
     }
 
     /**
-     * 🔹 Tampilkan detail (resume) dari satu pengajuan KTP
+     * 🔹 Detail pengajuan (resume)
      */
     public function resume($id, Request $request)
     {
@@ -48,9 +46,8 @@ class StatusPengajuanKtpController extends Controller
             ], 401);
         }
 
-        // Ambil data pengajuan milik user ini
         $data = PengajuanKtp::where('user_id', $user->id)
-            ->select('*')
+            ->select('id', 'nik', 'nama', 'jenis_ktp', 'status', 'keterangan', 'tanggal_pengajuan')
             ->find($id);
 
         if (!$data) {
