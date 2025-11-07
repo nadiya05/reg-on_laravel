@@ -51,29 +51,34 @@
                 {{-- 🔹 Badge status --}}
                 <td class="text-center">
                     @php
-                        $status = strtolower(trim($item->status));
-                        $badgeClass = match($status) {
-                            'selesai' => 'background-color: #28a745; color: white;',
-                            'ditolak' => 'background-color: #dc3545; color: white;',
-                            'sedang diproses' => 'background-color: #ffc107; color: black;',
-                            default => 'background-color: #6c757d; color: white;',
+                        $badgeClass = match(strtolower(trim($item->status))) {
+                            'selesai' => 'background-color:#28a745; color:white;',
+                            'ditolak' => 'background-color:#dc3545; color:white;',
+                            'sedang diproses' => 'background-color:#ffc107; color:black;',
+                            default => 'background-color:#6c757d; color:white;',
                         };
                     @endphp
-                    <span style="{{ $badgeClass }} padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                    <span style="{{ $badgeClass }} padding:6px 12px; border-radius:20px; font-weight:600; font-size:0.9rem;">
                         {{ ucfirst($item->status) }}
                     </span>
                 </td>
 
-                {{-- 🔹 Form update status --}}
+                {{-- 🔹 Form update status + keterangan --}}
                 <td>
-                    <form action="{{ route('admin.pengajuan-kk.status.update', $item->id) }}" method="POST">
+                    <form action="{{ route('admin.pengajuan-kk.status.update', $item->id) }}" method="POST" class="update-status-form">
                         @csrf
-                        <select name="status" class="form-select d-inline w-auto">
+                        <select name="status" class="form-select status-select d-inline w-auto">
                             <option value="sedang diproses" {{ strtolower($item->status) == 'sedang diproses' ? 'selected' : '' }}>Sedang diproses</option>
                             <option value="selesai" {{ strtolower($item->status) == 'selesai' ? 'selected' : '' }}>Selesai</option>
                             <option value="ditolak" {{ strtolower($item->status) == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                         </select>
-                        <button type="submit" class="btn btn-primary btn-sm">Ubah</button>
+
+                        {{-- 🔸 Kolom keterangan muncul hanya saat "Ditolak" --}}
+                        <div class="notes-wrapper mt-2" style="display: {{ strtolower($item->status) == 'ditolak' ? 'block' : 'none' }};">
+                            <textarea name="keterangan" class="form-control" rows="2" placeholder="Tuliskan alasan penolakan">{{ $item->keterangan }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm mt-2">Ubah</button>
                     </form>
                 </td>
 
@@ -88,15 +93,38 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center">Belum ada pengajuan</td>
+                <td colspan="8" class="text-center text-muted">Belum ada pengajuan</td>
             </tr>
             @endforelse
         </x-slot>
     </x-table>
 
     {{-- 🔢 Baris pagination --}}
-    <div>
+    <div class="mt-3">
         {{ $data->links('pagination::bootstrap-5') }}
     </div>
 </div>
+
+{{-- 🎯 Script toggle kolom keterangan --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.update-status-form').forEach(form => {
+        const select = form.querySelector('.status-select');
+        const notesWrapper = form.querySelector('.notes-wrapper');
+
+        function toggleNotes() {
+            if (select.value === 'ditolak') {
+                notesWrapper.style.display = 'block';
+            } else {
+                notesWrapper.style.display = 'none';
+                const textarea = notesWrapper.querySelector('textarea');
+                if (textarea) textarea.value = '';
+            }
+        }
+
+        select.addEventListener('change', toggleNotes);
+        toggleNotes();
+    });
+});
+</script>
 @endsection

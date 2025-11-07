@@ -74,11 +74,20 @@
     <div class="col-md-5 mb-4">
         <div class="card p-3 shadow-sm" style="border-radius: 15px; min-height: 470px;">
             <!-- 🔍 Filter Tanggal -->
-            <form method="GET" action="{{ route('admin.beranda') }}" class="mb-3 d-flex gap-2">
-                <input type="date" name="tanggal" class="form-control" value="{{ $tanggal ?? '' }}">
-                <button class="btn btn-primary">Tampilkan</button>
+            <!-- 🔍 Filter Rentang Tanggal -->
+            <form method="GET" action="{{ route('admin.beranda') }}" class="mb-3 d-flex gap-2 flex-wrap">
+                <div>
+                    <label class="form-label mb-1">Dari Tanggal</label>
+                    <input type="date" name="tanggal_awal" class="form-control" value="{{ $tanggalAwal ?? '' }}">
+                </div>
+                <div>
+                    <label class="form-label mb-1">Sampai Tanggal</label>
+                    <input type="date" name="tanggal_akhir" class="form-control" value="{{ $tanggalAkhir ?? '' }}">
+                </div>
+                <div class="align-self-end">
+                    <button class="btn btn-primary">Tampilkan</button>
+                </div>
             </form>
-
             <!-- 📊 Grafik -->
             <div style="height: 300px;">
                 <canvas id="grafikPengajuan"></canvas>
@@ -86,7 +95,8 @@
 
             <!-- 📄 Tombol Download PDF -->
             <div class="text-center mt-3">
-                <a href="{{ route('admin.beranda.pdf', ['tanggal' => $tanggal ?? '']) }}" class="btn-custom" target="_blank">
+                <a href="{{ route('admin.beranda.pdf', ['tanggal_awal' => $tanggalAwal ?? '', 'tanggal_akhir' => $tanggalAkhir ?? '']) }}" 
+                class="btn-custom" target="_blank">
                     <i class="bi bi-file-earmark-pdf"></i> Download PDF
                 </a>
             </div>
@@ -101,7 +111,7 @@
                     <div class="card-stat">
                         <i class="bi bi-people-fill"></i>
                         <h6>Total Akun Penduduk</h6>
-                        <h3>{{ $allUsers }}</h3>
+                        <h3>{{ $allUsers ?? 0}}</h3>
                     </div>
                 </a>
             </div>
@@ -111,7 +121,7 @@
                     <div class="card-stat">
                         <i class="bi bi-person-vcard"></i>
                         <h6>Total Pengajuan KTP</h6>
-                        <h3>{{ $totalPengajuanKtp }}</h3>
+                        <h3>{{ $totalPengajuanKtp ?? 0}}</h3>
                     </div>
                 </a>
             </div>
@@ -121,7 +131,7 @@
                     <div class="card-stat">
                         <i class="bi bi-journal-text"></i>
                         <h6>Total Pengajuan KK</h6>
-                        <h3>{{ $totalPengajuanKk }}</h3>
+                        <h3>{{ $totalPengajuanKk ?? 0}}</h3>
                     </div>
                 </a>
             </div>
@@ -131,7 +141,7 @@
                     <div class="card-stat">
                         <i class="bi bi-file-earmark-person"></i>
                         <h6>Total Pengajuan KIA</h6>
-                        <h3>{{ $totalPengajuanKia }}</h3>
+                        <h3>{{ $totalPengajuanKia ?? 0}}</h3>
                     </div>
                 </a>
             </div>
@@ -141,8 +151,12 @@
         <div class="card mt-4 p-3 shadow-sm text-end" style="border-radius: 15px;">
             <h6 style="color:#0077B6; font-weight:600;">Total Semua Pengajuan</h6>
             <h3 style="font-weight:700; color:#023e8a;">
-                {{ $totalPengajuanKtp + $totalPengajuanKk + $totalPengajuanKia }}
+                {{ $totalPengajuanKtp + $totalPengajuanKk + $totalPengajuanKia ?? 0}}
             </h3>
+            <div class="d-flex align-items-center mt-4" style="gap: 10px;">
+                <small style="color:#555;">Registrasi antrean online untuk Pelayanan Dokumen Kependudukan</small>
+            </div>
+        </div>
         </div>
     </div>
 </div>

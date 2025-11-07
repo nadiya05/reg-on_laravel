@@ -98,8 +98,11 @@
             <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
         </div>
         <h2>Laporan Jumlah Pengajuan Dokumen</h2>
-        @if($tanggal)
-            <p class="subtext">Tanggal: {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}</p>
+        @if($tanggalAwal && $tanggalAkhir)
+            <p class="subtext">
+                Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
+                s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
+            </p>
         @endif
     </div>
 
@@ -133,8 +136,9 @@
             <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
         </div>
         <h2>Rincian Pengajuan KTP</h2>
-        @if($tanggal)
-            <p class="subtext">Tanggal: {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}</p>
+        @if($tanggalAwal && $tanggalAkhir)
+            <p><strong>Periode:</strong> {{ \Carbon\Carbon::parse($tanggalAwal)->format('d M Y') }} 
+            s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->format('d M Y') }}</p>
         @endif
     </div>
 
@@ -172,8 +176,11 @@
             <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
         </div>
         <h2>Rincian Pengajuan KK</h2>
-        @if($tanggal)
-            <p class="subtext">Tanggal: {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}</p>
+        @if($tanggalAwal && $tanggalAkhir)
+            <p class="subtext">
+                Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
+                s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
+            </p>
         @endif
     </div>
 
@@ -211,8 +218,11 @@
             <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
         </div>
         <h2>Rincian Pengajuan KIA</h2>
-        @if($tanggal)
-            <p class="subtext">Tanggal: {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') }}</p>
+        @if($tanggalAwal && $tanggalAkhir)
+            <p class="subtext">
+                Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
+                s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
+            </p>
         @endif
     </div>
 

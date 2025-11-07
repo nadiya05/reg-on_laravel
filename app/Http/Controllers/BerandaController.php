@@ -13,17 +13,18 @@ class BerandaController extends Controller
 {
     public function index(Request $request)
     {
-        $tanggal = $request->input('tanggal');
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
 
         $queryKtp = PengajuanKtp::query();
         $queryKk = PengajuanKk::query();
         $queryKia = PengajuanKia::query();
 
-        // Filter berdasarkan tanggal pengajuan
-        if ($tanggal) {
-            $queryKtp->whereDate('tanggal_pengajuan', $tanggal);
-            $queryKk->whereDate('tanggal_pengajuan', $tanggal);
-            $queryKia->whereDate('tanggal_pengajuan', $tanggal);
+        // 🔹 Filter berdasarkan rentang tanggal
+        if ($tanggalAwal && $tanggalAkhir) {
+            $queryKtp->whereBetween('tanggal_pengajuan', [$tanggalAwal, $tanggalAkhir]);
+            $queryKk->whereBetween('tanggal_pengajuan', [$tanggalAwal, $tanggalAkhir]);
+            $queryKia->whereBetween('tanggal_pengajuan', [$tanggalAwal, $tanggalAkhir]);
         }
 
         $totalPengajuanKtp = $queryKtp->count();
@@ -31,35 +32,36 @@ class BerandaController extends Controller
         $totalPengajuanKia = $queryKia->count();
         $allUsers = User::count();
 
-        // Detail data untuk tabel di bawah grafik
         $dataKtp = $queryKtp->latest()->get();
         $dataKk = $queryKk->latest()->get();
         $dataKia = $queryKia->latest()->get();
 
         return view('admin.beranda', compact(
-            'tanggal',
+            'tanggalAwal',
+            'tanggalAkhir',
             'totalPengajuanKtp',
             'totalPengajuanKk',
             'totalPengajuanKia',
             'allUsers',
             'dataKtp',
             'dataKk',
-            'dataKia',
+            'dataKia'
         ));
     }
 
     public function downloadPdf(Request $request)
     {
-        $tanggal = $request->input('tanggal');
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
 
         $queryKtp = PengajuanKtp::query();
         $queryKk = PengajuanKk::query();
         $queryKia = PengajuanKia::query();
 
-        if ($tanggal) {
-            $queryKtp->whereDate('tanggal_pengajuan', $tanggal);
-            $queryKk->whereDate('tanggal_pengajuan', $tanggal);
-            $queryKia->whereDate('tanggal_pengajuan', $tanggal);
+        if ($tanggalAwal && $tanggalAkhir) {
+            $queryKtp->whereBetween('tanggal_pengajuan', [$tanggalAwal, $tanggalAkhir]);
+            $queryKk->whereBetween('tanggal_pengajuan', [$tanggalAwal, $tanggalAkhir]);
+            $queryKia->whereBetween('tanggal_pengajuan', [$tanggalAwal, $tanggalAkhir]);
         }
 
         $totalPengajuanKtp = $queryKtp->count();
@@ -74,7 +76,8 @@ class BerandaController extends Controller
         $totalPengajuanDokumen = $totalPengajuanKtp + $totalPengajuanKk + $totalPengajuanKia;
 
         $pdf = PDF::loadView('admin.laporan-pengajuan', compact(
-            'tanggal',
+            'tanggalAwal',
+            'tanggalAkhir',
             'totalPengajuanKtp',
             'totalPengajuanKk',
             'totalPengajuanKia',

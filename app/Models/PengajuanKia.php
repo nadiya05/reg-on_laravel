@@ -25,6 +25,7 @@ class PengajuanKia extends Model
         'surat_nikah', 
         'ktp_ortu', 
         'pass_foto',
+        'keterangan',
     ];
 
     /**

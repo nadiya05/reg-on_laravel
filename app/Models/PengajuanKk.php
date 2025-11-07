@@ -27,6 +27,7 @@ class PengajuanKk extends Model
         'surat_kematian',
         'akta_kelahiran',
         'ijazah',
+        'keterangan',
     ];
 
     /**

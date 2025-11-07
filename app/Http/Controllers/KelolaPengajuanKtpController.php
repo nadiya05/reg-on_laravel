@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-
 use PDF; // alias dari barryvdh/laravel-dompdf
 
 class KelolaPengajuanKtpController extends Controller

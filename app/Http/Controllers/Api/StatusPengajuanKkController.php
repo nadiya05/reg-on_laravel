@@ -8,26 +8,57 @@ use App\Models\PengajuanKk;
 
 class StatusPengajuanKkController extends Controller
 {
+    /**
+     * 🔹 Ambil semua pengajuan KK milik user yang sedang login
+     */
     public function index(Request $request)
     {
-        // Ambil user yang sedang login (dari token)
         $user = $request->user();
 
-        // Filter data berdasarkan user_id
+        if (!$user) {
+            return response()->json([
+                'message' => 'User tidak ditemukan atau token tidak valid.'
+            ], 401);
+        }
+
         $data = PengajuanKk::where('user_id', $user->id)
-            ->select('id', 'nik', 'nama', 'jenis_kk', 'status', 'tanggal_pengajuan')
+            ->select('id', 'nik', 'nama', 'jenis_kk', 'status', 'keterangan', 'tanggal_pengajuan')
+            ->orderBy('tanggal_pengajuan', 'desc')
             ->get();
 
-        return response()->json($data);
+        return response()->json([
+            'status' => 'success',
+            'total' => $data->count(),
+            'data' => $data
+        ], 200);
     }
 
+    /**
+     * 🔹 Detail pengajuan (resume)
+     */
     public function resume($id, Request $request)
     {
         $user = $request->user();
 
-        // Pastikan data hanya milik user yang login
-        $data = PengajuanKk::where('user_id', $user->id)->findOrFail($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'User tidak ditemukan atau token tidak valid.'
+            ], 401);
+        }
 
-        return response()->json($data);
+        $data = PengajuanKk::where('user_id', $user->id)
+            ->select('id', 'nik', 'nama', 'jenis_kk', 'status', 'keterangan', 'tanggal_pengajuan')
+            ->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data pengajuan tidak ditemukan.'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ], 200);
     }
 }

@@ -13,27 +13,52 @@ class StatusPengajuanKiaController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil user dari token Sanctum
         $user = $request->user();
 
-        // Filter berdasarkan user_id
+        if (!$user) {
+            return response()->json([
+                'message' => 'User tidak ditemukan atau token tidak valid.'
+            ], 401);
+        }
+
         $data = PengajuanKia::where('user_id', $user->id)
-            ->select('id', 'nik', 'nama', 'jenis_kia', 'status', 'tanggal_pengajuan')
+            ->select('id', 'nik', 'nama', 'jenis_kia', 'status', 'keterangan', 'tanggal_pengajuan')
+            ->orderBy('tanggal_pengajuan', 'desc')
             ->get();
 
-        return response()->json($data);
+        return response()->json([
+            'status' => 'success',
+            'total' => $data->count(),
+            'data' => $data
+        ], 200);
     }
 
     /**
-     * 🔹 Tampilkan detail satu pengajuan (resume)
+     * 🔹 Detail pengajuan (resume)
      */
     public function resume($id, Request $request)
     {
         $user = $request->user();
 
-        // Pastikan hanya data milik user yang login yang bisa diakses
-        $data = PengajuanKia::where('user_id', $user->id)->findOrFail($id);
+        if (!$user) {
+            return response()->json([
+                'message' => 'User tidak ditemukan atau token tidak valid.'
+            ], 401);
+        }
 
-        return response()->json($data);
+        $data = PengajuanKia::where('user_id', $user->id)
+            ->select('id', 'nik', 'nama', 'jenis_kia', 'status', 'keterangan', 'tanggal_pengajuan')
+            ->find($id);
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'Data pengajuan tidak ditemukan.'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data
+        ], 200);
     }
 }

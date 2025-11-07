@@ -12,6 +12,7 @@ use App\Http\Controllers\KelolaPengajuanKkController;
 use App\Http\Controllers\KelolaStatusKiaController;
 use App\Http\Controllers\KelolaStatusKkController;
 use App\Http\Controllers\KelolaBeritaController;
+use App\Http\Controllers\KelolaNotifikasiController;
 
 Route::get('/', function () { return view('auth.masuk'); });
 // Halaman login
@@ -24,9 +25,9 @@ Route::post('/masuk', [AuthController::class, 'login'])->name('login.proses');
 Route::post('/keluar', [AuthController::class, 'logout'])->name('keluar');
 
 // Beranda setelah login
-Route::get('/beranda', function () {
-    return view('admin.beranda');
-})->name('beranda')->middleware('auth');
+Route::get('/beranda', [BerandaController::class, 'index'])
+    ->name('beranda')
+    ->middleware('auth');
 
 // Beranda admin
 Route::get('/admin/beranda', [BerandaController::class, 'index'])->name('admin.beranda');
@@ -106,3 +107,7 @@ Route::post('kelola-berita', [KelolaBeritaController::class, 'store'])->name('ad
 Route::get('kelola-berita/{id}/edit', [KelolaBeritaController::class, 'edit'])->name('admin.kelola-berita.edit');
 Route::put('kelola-berita/{id}', [KelolaBeritaController::class, 'update'])->name('admin.kelola-berita.update');
 Route::delete('kelola-berita/{id}', [KelolaBeritaController::class, 'destroy'])->name('admin.kelola-berita.destroy');
+
+//notifikasi
+Route::get('/admin/notifikasi', [KelolaNotifikasiController::class, 'index'])->name('admin.notifikasi');
+Route::delete('/admin/notifikasi/{id}', [KelolaNotifikasiController::class, 'destroy'])->name('admin.notifikasi.delete');

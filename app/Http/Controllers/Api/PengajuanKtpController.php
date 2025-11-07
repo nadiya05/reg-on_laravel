@@ -6,10 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PengajuanKtp;
+use App\Models\Notifikasi;
 
 class PengajuanKtpController extends Controller
 {
-    // List jenis pengajuan
+    // 🔹 List jenis pengajuan
     public function index()
     {
         return response()->json([
@@ -25,105 +26,143 @@ class PengajuanKtpController extends Controller
     // 🔹 Simpan pengajuan KTP Pemula
     public function storePemula(Request $request)
     {
-        $request->validate([
-            'nik' => 'required|string',
-            'nama' => 'required|string',
-            'tanggal_pengajuan' => 'required|date',
-            'kk' => 'required|file',
-            'ijazah_skl' => 'required|file',
-        ]);
+        try {
+            $request->validate([
+                'nik' => 'required|string',
+                'nama' => 'required|string',
+                'tanggal_pengajuan' => 'required|date',
+                'kk' => 'required|file',
+                'ijazah_skl' => 'required|file',
+            ]);
 
-        $data = $request->only(['nik', 'nama', 'tanggal_pengajuan']);
-        $data['jenis_ktp'] = 'Pemula';
-        $data['user_id'] = auth()->id();
+            $user = $request->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User tidak terautentikasi'], 401);
+            }
 
-        $data['kk'] = $request->file('kk')->store('ktp/kk', 'public');
-        $data['ijazah_skl'] = $request->file('ijazah_skl')->store('ktp/ijazah', 'public');
+            $data = $request->only(['nik', 'nama', 'tanggal_pengajuan']);
+            $data['jenis_ktp'] = 'Pemula';
+            $data['user_id'] = $user->id;
 
-        $ktp = PengajuanKtp::create($data);
+            // Upload file
+            $data['kk'] = $request->file('kk')->store('ktp/kk', 'public');
+            $data['ijazah_skl'] = $request->file('ijazah_skl')->store('ktp/ijazah', 'public');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pengajuan Pemula berhasil disimpan',
-            'data' => [
-                'id' => $ktp->id,
-                'nomor_antrean' => $ktp->nomor_antrean, // 🔑 nomor antrean ikut tampil
-                'jenis_ktp' => $ktp->jenis_ktp,
-                'nik' => $ktp->nik,
-                'nama' => $ktp->nama,
-                'tanggal_pengajuan' => $ktp->tanggal_pengajuan,
-            ]
-        ], 201);
+            $ktp = PengajuanKtp::create($data);
+
+            // Simpan notifikasi
+            Notifikasi::create([
+                'user_id' => $user->id,
+                'judul' => 'Pengajuan KTP Pemula',
+                'pesan' => 'Pengajuan KTP Pemula Anda berhasil dikirim dan sedang diproses.',
+                'tanggal' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan KTP Pemula berhasil disimpan',
+                'data' => $ktp
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     // 🔹 Simpan pengajuan KTP Kehilangan
     public function storeKehilangan(Request $request)
     {
-        $request->validate([
-            'nik' => 'required|string',
-            'nama' => 'required|string',
-            'tanggal_pengajuan' => 'required|date',
-            'kk' => 'required|file',
-            'surat_kehilangan' => 'required|file',
-        ]);
+        try {
+            $request->validate([
+                'nik' => 'required|string',
+                'nama' => 'required|string',
+                'tanggal_pengajuan' => 'required|date',
+                'kk' => 'required|file',
+                'surat_kehilangan' => 'required|file',
+            ]);
 
-        $data = $request->only(['nik', 'nama', 'tanggal_pengajuan']);
-        $data['jenis_ktp'] = 'Kehilangan';
-        $data['user_id'] = auth()->id();
+            $user = $request->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User tidak terautentikasi'], 401);
+            }
 
-        $data['kk'] = $request->file('kk')->store('ktp/kk', 'public');
-        $data['surat_kehilangan'] = $request->file('surat_kehilangan')->store('ktp/kehilangan', 'public');
+            $data = $request->only(['nik', 'nama', 'tanggal_pengajuan']);
+            $data['jenis_ktp'] = 'Kehilangan';
+            $data['user_id'] = $user->id;
 
-        $ktp = PengajuanKtp::create($data);
+            $data['kk'] = $request->file('kk')->store('ktp/kk', 'public');
+            $data['surat_kehilangan'] = $request->file('surat_kehilangan')->store('ktp/kehilangan', 'public');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pengajuan Kehilangan berhasil disimpan',
-            'data' => [
-                'id' => $ktp->id,
-                'nomor_antrean' => $ktp->nomor_antrean,
-                'jenis_ktp' => $ktp->jenis_ktp,
-                'nik' => $ktp->nik,
-                'nama' => $ktp->nama,
-                'tanggal_pengajuan' => $ktp->tanggal_pengajuan,
-            ]
-        ], 201);
+            $ktp = PengajuanKtp::create($data);
+
+            Notifikasi::create([
+                'user_id' => $user->id,
+                'judul' => 'Pengajuan KTP Kehilangan',
+                'pesan' => 'Pengajuan KTP Kehilangan Anda berhasil dikirim dan sedang diproses.',
+                'tanggal' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan KTP Kehilangan berhasil disimpan',
+                'data' => $ktp
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     // 🔹 Simpan pengajuan KTP Rusak / Ubah Status
     public function storeRusak(Request $request)
     {
-        $request->validate([
-            'nik' => 'required|string',
-            'nama' => 'required|string',
-            'tanggal_pengajuan' => 'required|date',
-            'kk' => 'required|file',
-        ]);
+        try {
+            $request->validate([
+                'nik' => 'required|string',
+                'nama' => 'required|string',
+                'tanggal_pengajuan' => 'required|date',
+                'kk' => 'required|file',
+            ]);
 
-        $data = $request->only(['nik', 'nama', 'tanggal_pengajuan']);
-        $data['jenis_ktp'] = 'Rusak atau Ubah Status';
-        $data['user_id'] = auth()->id();
+            $user = $request->user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User tidak terautentikasi'], 401);
+            }
 
-        $data['kk'] = $request->file('kk')->store('ktp/kk', 'public');
+            $data = $request->only(['nik', 'nama', 'tanggal_pengajuan']);
+            $data['jenis_ktp'] = 'Rusak atau Ubah Status';
+            $data['user_id'] = $user->id;
 
-        $ktp = PengajuanKtp::create($data);
+            $data['kk'] = $request->file('kk')->store('ktp/kk', 'public');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Pengajuan Rusak/Ubah Status berhasil disimpan',
-            'data' => [
-                'id' => $ktp->id,
-                'nomor_antrean' => $ktp->nomor_antrean,
-                'jenis_ktp' => $ktp->jenis_ktp,
-                'nik' => $ktp->nik,
-                'nama' => $ktp->nama,
-                'tanggal_pengajuan' => $ktp->tanggal_pengajuan,
-            ]
-        ], 201);
+            $ktp = PengajuanKtp::create($data);
+
+            Notifikasi::create([
+                'user_id' => $user->id,
+                'judul' => 'Pengajuan KTP Rusak/Ubah Status',
+                'pesan' => 'Pengajuan KTP Rusak/Ubah Status Anda berhasil dikirim dan sedang diproses.',
+                'tanggal' => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengajuan KTP Rusak/Ubah Status berhasil disimpan',
+                'data' => $ktp
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
-    // 🔹 Tampilkan data pengajuan KTP berdasarkan ID
-public function show($id, Request $request)
+    // 🔹 Detail pengajuan berdasarkan ID
+    public function show($id, Request $request)
     {
         $user = $request->user();
 
@@ -154,6 +193,6 @@ public function show($id, Request $request)
                 'jenis_ktp' => $ktp->jenis_ktp,
                 'tanggal_pengajuan' => $ktp->tanggal_pengajuan,
             ]
-        ], 200);
+        ]);
     }
 }

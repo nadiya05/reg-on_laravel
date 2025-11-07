@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PengajuanKia;
 use App\Models\User;
+use App\Models\Notifikasi;
 use Barryvdh\DomPDF\Facade\PDF;
+use Carbon\Carbon;
 
 class KelolaStatusKiaController extends Controller
 {
@@ -14,16 +16,16 @@ class KelolaStatusKiaController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PengajuanKia::select('id', 'nik', 'nama', 'jenis_kia', 'tanggal_pengajuan', 'status');
+        $query = PengajuanKia::select('id', 'nik', 'nama', 'jenis_kia', 'tanggal_pengajuan', 'status', 'keterangan');
 
         // 🔍 fitur pencarian
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%$search%")
-                ->orWhere('nik', 'like', "%$search%")
-                ->orWhere('jenis_kia', 'like', "%$search%")
-                ->orWhere('status', 'like', "%$search%");
+                  ->orWhere('nik', 'like', "%$search%")
+                  ->orWhere('jenis_kia', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%");
             });
         }
 
@@ -33,19 +35,42 @@ class KelolaStatusKiaController extends Controller
         // kirim ke view
         return view('admin.pengajuan-kia.status', compact('data'));
     }
+
     /**
-     * 🔹 Ubah status pengajuan KIA langsung dari dropdown.
+     * 🔹 Ubah status pengajuan dan kirim notifikasi ke user.
      */
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:sedang diproses,selesai,ditolak',
+            'keterangan' => 'nullable|string|max:255',
         ]);
 
         $pengajuan = PengajuanKia::findOrFail($id);
-        $pengajuan->update(['status' => $request->status]);
+        $pengajuan->status = $request->status;
+        $pengajuan->keterangan = $request->keterangan ?? null;
+        $pengajuan->save();
 
-        return redirect()->back()->with('success', 'Status pengajuan KIA berhasil diperbarui!');
+        // 🔔 Siapkan pesan notifikasi
+        $pesan = 'Status pengajuan KIA Anda telah berubah menjadi: ' . ucfirst($request->status);
+
+        // Tambahkan alasan penolakan jika statusnya ditolak
+        if ($request->status === 'ditolak' && $request->filled('keterangan')) {
+            $pesan .= "\nAlasan penolakan: " . $request->keterangan;
+        }
+
+        // Simpan notifikasi ke tabel notifikasi
+        Notifikasi::create([
+            'user_id' => $pengajuan->user_id,
+            'judul' => 'Status Pengajuan KIA Diperbarui',
+            'pesan' => $pesan,
+            'tanggal' => Carbon::now()->format('Y-m-d H:i:s'),
+            'status' => 'belum_dibaca',
+        ]);
+
+        return redirect()
+            ->route('admin.pengajuan-kia.status')
+            ->with('success', 'Status pengajuan berhasil diperbarui dan notifikasi dikirim.');
     }
 
     /**

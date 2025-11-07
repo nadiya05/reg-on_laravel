@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\PengajuanKkController;
 use App\Http\Controllers\Api\StatusPengajuanKkController;
 use App\Http\Controllers\Api\BeritaController;
 use App\Http\Controllers\Api\StatusPengajuanAllController;
-
+use App\Http\Controllers\Api\NotifikasiController;
 
 
 // Route untuk API Users
@@ -49,7 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pengajuan_kk/{id}', [PengajuanKkController::class, 'show']);
     Route::get('/status_pengajuan_kk', [StatusPengajuanKkController::class, 'index']);
     Route::get('/status_pengajuan_kk/{id}', [StatusPengajuanKkController::class, 'resume']);
-    Route::get('/berita', [BeritaController::class, 'index']); // semua berita
-    Route::get('/berita/{id}', [BeritaController::class, 'show']); // detail berita
+    Route::get('/berita', [BeritaController::class, 'index']); 
+    Route::get('/berita/{id}', [BeritaController::class, 'show']); 
     Route::get('/status_pengajuan_all', [StatusPengajuanAllController::class, 'index']);
+    Route::get('/notifikasi', [NotifikasiController::class, 'index']);
+    Route::put('/notifikasi/{id}', [NotifikasiController::class, 'updateStatus']);
+    Route::delete('/notifikasi/{id}', [NotifikasiController::class, 'destroy']);
 });
