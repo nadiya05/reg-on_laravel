@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PengajuanKk;
+use App\Models\Notifikasi;
 
 class PengajuanKkController extends Controller
 {
@@ -72,6 +73,15 @@ class PengajuanKkController extends Controller
             ...$uploadPath
         ]);
 
+        Notifikasi::create([
+                'user_id' => $user->id,
+                'judul' => 'Pengajuan KK Pemula',
+                'pesan' => 'Pengajuan KK Pemula Anda berhasil dikirim dan sedang diproses.',
+                'tanggal' => now(),
+                'tipe_pengajuan' => 'KK',
+                'pengajuan_id' => $kk->id,
+            ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Pengajuan KK Pemula berhasil disimpan',
@@ -130,6 +140,15 @@ class PengajuanKkController extends Controller
             'status' => 'Sedang Diproses',
             ...$uploadPath
         ]);
+
+        Notifikasi::create([
+                'user_id' => $user->id,
+                'judul' => 'Pengajuan KK Ubah Status',
+                'pesan' => 'Pengajuan KK Ubah Status Anda berhasil dikirim dan sedang diproses.',
+                'tanggal' => now(),
+                'tipe_pengajuan' => 'KK',
+                'pengajuan_id' => $kk->id,
+            ]);
 
         return response()->json([
             'success' => true,

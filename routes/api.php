@@ -53,6 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/berita/{id}', [BeritaController::class, 'show']); 
     Route::get('/status_pengajuan_all', [StatusPengajuanAllController::class, 'index']);
     Route::get('/notifikasi', [NotifikasiController::class, 'index']);
-    Route::put('/notifikasi/{id}', [NotifikasiController::class, 'updateStatus']);
+    Route::put('/notifikasi/{id}/baca', [NotifikasiController::class, 'updateStatus']);
     Route::delete('/notifikasi/{id}', [NotifikasiController::class, 'destroy']);
 });

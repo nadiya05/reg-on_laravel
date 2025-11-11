@@ -56,6 +56,8 @@ class PengajuanKtpController extends Controller
                 'judul' => 'Pengajuan KTP Pemula',
                 'pesan' => 'Pengajuan KTP Pemula Anda berhasil dikirim dan sedang diproses.',
                 'tanggal' => now(),
+                'tipe_pengajuan' => 'KTP',
+                'pengajuan_id' => $ktp->id,
             ]);
 
             return response()->json([
@@ -102,6 +104,8 @@ class PengajuanKtpController extends Controller
                 'judul' => 'Pengajuan KTP Kehilangan',
                 'pesan' => 'Pengajuan KTP Kehilangan Anda berhasil dikirim dan sedang diproses.',
                 'tanggal' => now(),
+                'tipe_pengajuan' => 'KTP',
+                'pengajuan_id' => $ktp->id,
             ]);
 
             return response()->json([
@@ -146,6 +150,8 @@ class PengajuanKtpController extends Controller
                 'judul' => 'Pengajuan KTP Rusak/Ubah Status',
                 'pesan' => 'Pengajuan KTP Rusak/Ubah Status Anda berhasil dikirim dan sedang diproses.',
                 'tanggal' => now(),
+                'tipe_pengajuan' => 'KTP',
+                'pengajuan_id' => $ktp->id,
             ]);
 
             return response()->json([

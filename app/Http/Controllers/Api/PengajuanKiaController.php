@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PengajuanKia;
+use App\Models\Notifikasi;
 
 class PengajuanKiaController extends Controller
 {
@@ -74,6 +75,15 @@ class PengajuanKiaController extends Controller
             'status' => 'Sedang Diproses',
             ...$uploadPath
         ]);
+
+        Notifikasi::create([
+                'user_id' => $user->id,
+                'judul' => 'Pengajuan KIA Pemula',
+                'pesan' => 'Pengajuan KIA Pemula Anda berhasil dikirim dan sedang diproses.',
+                'tanggal' => now(),
+                'tipe_pengajuan' => 'KIA',
+                'pengajuan_id' => $kia->id,
+            ]);
 
         return response()->json([
             'success' => true,

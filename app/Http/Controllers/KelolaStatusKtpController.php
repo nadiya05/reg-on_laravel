@@ -63,6 +63,8 @@ class KelolaStatusKtpController extends Controller
             'pesan' => $pesan,
             'tanggal' => Carbon::now()->format('Y-m-d H:i:s'),
             'status' => 'belum_dibaca',
+            'tipe_pengajuan' => 'KTP',
+            'pengajuan_id' => $pengajuan->id,
         ]);
 
         return redirect()
