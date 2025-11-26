@@ -13,7 +13,7 @@ class KelolaInformasiController extends Controller
     $query = Informasi::query();
 
     // fitur search (kaya di pengajuan KTP)
-    if ($request->has('search') && $request->search != '') {
+    if (!empty($request->search)) {
         $search = $request->search;
         $query->where(function ($q) use ($search) {
             $q->where('jenis_pengajuan', 'like', "%{$search}%")
@@ -27,18 +27,14 @@ class KelolaInformasiController extends Controller
     return view('admin.kelola-informasi.index', compact('informasi'));
 }
 
-
-    // Form tambah
     public function create()
     {
-        // opsi dropdown bisa kamu definisikan di sini
         $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak dan Ubah Status'];
         $dokumenOptions   = ['KTP', 'KK', 'KIA'];
 
         return view('admin.kelola-informasi.create', compact('pengajuanOptions', 'dokumenOptions'));
     }
 
-    // Simpan data baru
     public function store(Request $request)
     {
         $request->validate([
@@ -52,7 +48,6 @@ class KelolaInformasiController extends Controller
         return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil ditambahkan!');
     }
 
-    // Form edit
     public function edit($id)
     {
         $info = Informasi::findOrFail($id);
@@ -62,7 +57,6 @@ class KelolaInformasiController extends Controller
         return view('admin.kelola-informasi.edit', compact('info', 'pengajuanOptions', 'dokumenOptions'));
     }
 
-    // Update data
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -77,7 +71,6 @@ class KelolaInformasiController extends Controller
         return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil diperbarui!');
     }
 
-    // Hapus data
     public function destroy($id)
     {
         $info = Informasi::findOrFail($id);

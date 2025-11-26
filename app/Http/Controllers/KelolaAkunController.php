@@ -60,7 +60,7 @@ $request->validate($rules);
         // simpan foto jika ada
         if ($request->hasFile('foto')) {
             $path = $request->file('foto')->store('images', 'public');
-            $data['foto'] = $path; // simpan path images/nama.jpg ke DB
+            $data['foto'] = $path; 
         }
 
         User::create($data);

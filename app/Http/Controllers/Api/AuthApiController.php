@@ -28,7 +28,7 @@ class AuthApiController extends Controller
             'password' => Hash::make($request->password),
             'no_telp' => $request->no_telp,
             'jenis_kelamin' => $request->jenis_kelamin,
-            'role' => 'user', // ✅ default penduduk
+            'role' => 'user', 
         ]);
 
         return response()->json([
@@ -57,7 +57,7 @@ class AuthApiController extends Controller
         return response()->json([
             'message' => 'Login berhasil',
             'user' => $user,
-            'token' => $token // ⬅️ ini yang dikirim ke Flutter
+            'token' => $token 
         ]);
     }
 }

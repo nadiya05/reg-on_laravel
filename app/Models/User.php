@@ -52,4 +52,23 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function getFotoUrlAttribute()
+{
+    if ($this->foto) {
+        return asset('storage/' . $this->foto);
+    }
+    return asset('storage/images/default-avatar.png');
+}
+
+public function isAdmin()
+{
+    return $this->role === 'admin';
+}
+
+public function chats()
+{
+    return $this->hasMany(Chat::class);
+}
+
 }

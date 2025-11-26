@@ -8,39 +8,30 @@ use Illuminate\Support\Facades\Storage;
 
 class KelolaBeritaController extends Controller
 {
-    // 📝 Tampilkan semua data berita
     public function index(Request $request)
     {
-        $search = $request->input('search');
+        // Data-level refactoring: $search → $searchBerita
+        $searchBerita = $request->input('search');  
 
-        $berita = Berita::when($search, function ($query, $search) {
-            return $query->where('judul', 'like', "%{$search}%");
-        })
-        ->orderBy('tanggal', 'desc')
-        ->paginate(5); // bisa ubah ke 10 kalau mau
+        $berita = Berita::when($searchBerita, function ($query, $searchBerita) {
+                return $query->where('judul', 'like', "%{$searchBerita}%");
+            })
+            ->orderBy('tanggal', 'desc')
+            ->paginate(5);
 
         return view('admin.kelola-berita.index', compact('berita'));
     }
-    // ➕ Form tambah berita
+
     public function create()
     {
         return view('admin.kelola-berita.create');
     }
 
-    // 💾 Simpan berita baru
     public function store(Request $request)
     {
-        $request->validate([
-            'judul'   => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'foto'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'konten'  => 'required|string',
-        ]);
+        $this->validateBerita($request);
 
-        $fotoPath = null;
-        if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('berita', 'public'); // simpan ke storage/app/public/berita
-        }
+        $fotoPath = $this->uploadFoto($request);
 
         Berita::create([
             'judul'   => $request->judul,
@@ -49,37 +40,25 @@ class KelolaBeritaController extends Controller
             'konten'  => $request->konten,
         ]);
 
-        return redirect()->route('admin.kelola-berita.index')->with('success', 'Berita berhasil ditambahkan!');
+        return redirect()->route('admin.kelola-berita.index')
+                         ->with('success', 'Berita berhasil ditambahkan!');
     }
 
-    // ✏️ Form edit berita
     public function edit($id)
     {
         $berita = Berita::findOrFail($id);
         return view('admin.kelola-berita.edit', compact('berita'));
     }
 
-    // 🔄 Update berita
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'judul'   => 'required|string|max:255',
-            'tanggal' => 'required|date',
-            'foto'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'konten'  => 'required|string',
-        ]);
+        $this->validateBerita($request);
 
         $berita = Berita::findOrFail($id);
 
-        // cek jika ada foto baru diupload
         if ($request->hasFile('foto')) {
-            // hapus foto lama jika ada
-            if ($berita->foto && Storage::disk('public')->exists($berita->foto)) {
-                Storage::disk('public')->delete($berita->foto);
-            }
-
-            $fotoPath = $request->file('foto')->store('berita', 'public');
-            $berita->foto = $fotoPath;
+            $this->hapusFotoLama($berita->foto);
+            $berita->foto = $this->uploadFoto($request);
         }
 
         $berita->judul   = $request->judul;
@@ -87,21 +66,50 @@ class KelolaBeritaController extends Controller
         $berita->konten  = $request->konten;
         $berita->save();
 
-        return redirect()->route('admin.kelola-berita.index')->with('success', 'Berita berhasil diperbarui!');
+        return redirect()->route('admin.kelola-berita.index')
+                         ->with('success', 'Berita berhasil diperbarui!');
     }
 
-    // 🗑️ Hapus berita
     public function destroy($id)
     {
         $berita = Berita::findOrFail($id);
 
-        // hapus foto dari storage jika ada
-        if ($berita->foto && Storage::disk('public')->exists($berita->foto)) {
-            Storage::disk('public')->delete($berita->foto);
-        }
+        $this->hapusFotoLama($berita->foto);
 
         $berita->delete();
 
-        return redirect()->route('admin.kelola-berita.index')->with('success', 'Berita berhasil dihapus!');
+        return redirect()->route('admin.kelola-berita.index')
+                         ->with('success', 'Berita berhasil dihapus!');
+    }
+
+    /* ============================================================
+       ✨ Routine-Level Refactoring Methods
+       ============================================================ */
+
+    // 1. Ekstraksi validasi
+    private function validateBerita(Request $request)
+    {
+        return $request->validate([
+            'judul'   => 'required|string|max:255',
+            'tanggal' => 'required|date',
+            'foto'    => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'konten'  => 'required|string',
+        ]);
+    }
+
+    // 2. Ekstraksi upload foto
+    private function uploadFoto(Request $request)
+    {
+        return $request->hasFile('foto')
+            ? $request->file('foto')->store('berita', 'public')
+            : null;
+    }
+
+    // 3. Ekstraksi hapus foto lama
+    private function hapusFotoLama($fotoLama)
+    {
+        if ($fotoLama && Storage::disk('public')->exists($fotoLama)) {
+            Storage::disk('public')->delete($fotoLama);
+        }
     }
 }

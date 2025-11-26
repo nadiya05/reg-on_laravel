@@ -13,6 +13,7 @@ use App\Http\Controllers\KelolaStatusKiaController;
 use App\Http\Controllers\KelolaStatusKkController;
 use App\Http\Controllers\KelolaBeritaController;
 use App\Http\Controllers\KelolaNotifikasiController;
+use App\Http\Controllers\KelolaChatController;
 
 Route::get('/', function () { return view('auth.masuk'); });
 // Halaman login
@@ -111,3 +112,14 @@ Route::delete('kelola-berita/{id}', [KelolaBeritaController::class, 'destroy'])-
 //notifikasi
 Route::get('/admin/notifikasi', [KelolaNotifikasiController::class, 'index'])->name('admin.notifikasi');
 Route::delete('/admin/notifikasi/{id}', [KelolaNotifikasiController::class, 'destroy'])->name('admin.notifikasi.delete');
+
+//chat
+Route::prefix('admin/chat')->name('chat.')->group(function () {
+
+    
+    Route::get('/', [KelolaChatController::class, 'index'])->name('index');
+    Route::delete('/delete/{chat_id}', [KelolaChatController::class, 'destroy'])->name('delete');
+    Route::delete('/clear/{user_id}', [KelolaChatController::class, 'clearUserChat'])->name('clear');
+    Route::post('/send/{user_id}', [KelolaChatController::class, 'sendReply'])->name('send');
+    Route::get('/{user_id}', [KelolaChatController::class, 'show'])->name('show');
+});

@@ -10,10 +10,12 @@ class StatusPengajuanKkController extends Controller
 {
     /**
      * 🔹 Ambil semua pengajuan KK milik user yang sedang login
+     * + 🔍 fitur search seperti KIA
      */
     public function index(Request $request)
     {
         $user = $request->user();
+        $search = strtolower($request->query('search', ''));
 
         if (!$user) {
             return response()->json([
@@ -21,10 +23,22 @@ class StatusPengajuanKkController extends Controller
             ], 401);
         }
 
-        $data = PengajuanKk::where('user_id', $user->id)
+        $query = PengajuanKk::where('user_id', $user->id)
             ->select('id', 'nik', 'nama', 'jenis_kk', 'status', 'keterangan', 'tanggal_pengajuan')
-            ->orderBy('tanggal_pengajuan', 'desc')
-            ->get();
+            ->orderBy('tanggal_pengajuan', 'desc');
+
+        // 🔍 Tambahkan filter pencarian
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(nik) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(nama) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(jenis_kk) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(status) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(tanggal_pengajuan) LIKE ?', ["%$search%"]);
+            });
+        }
+
+        $data = $query->get();
 
         return response()->json([
             'status' => 'success',

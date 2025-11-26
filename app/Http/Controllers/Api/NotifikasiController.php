@@ -8,13 +8,14 @@ use App\Models\Notifikasi;
 use App\Models\PengajuanKtp;
 use App\Models\PengajuanKk;
 use App\Models\PengajuanKia;
+use Illuminate\Support\Facades\DB;
 
 class NotifikasiController extends Controller
 {
-    // 🔹 Ambil semua notifikasi milik user login
-    public function index()
+    public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
+        $search = $request->query('search');
 
         if (!$user) {
             return response()->json([
@@ -23,23 +24,21 @@ class NotifikasiController extends Controller
             ], 401);
         }
 
+        // Ambil semua notifikasi user
         $notifikasi = Notifikasi::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($notif) {
                 $nama = '-';
-
                 switch (strtoupper($notif->tipe_pengajuan)) {
                     case 'KTP':
                         $data = PengajuanKtp::find($notif->pengajuan_id);
                         $nama = $data->nama ?? '-';
                         break;
-
                     case 'KK':
                         $data = PengajuanKk::find($notif->pengajuan_id);
                         $nama = $data->nama ?? '-';
                         break;
-
                     case 'KIA':
                         $data = PengajuanKia::find($notif->pengajuan_id);
                         $nama = $data->nama ?? '-';
@@ -57,13 +56,23 @@ class NotifikasiController extends Controller
                 ];
             });
 
+        // 🔍 Filtering termasuk nama_pengajuan
+        if ($search) {
+            $searchLower = strtolower($search);
+            $notifikasi = $notifikasi->filter(function ($n) use ($searchLower) {
+                return str_contains(strtolower($n['judul']), $searchLower)
+                    || str_contains(strtolower($n['pesan']), $searchLower)
+                    || str_contains(strtolower($n['tipe_pengajuan']), $searchLower)
+                    || str_contains(strtolower($n['nama_pengajuan']), $searchLower);
+            })->values();
+        }
+
         return response()->json([
             'success' => true,
             'data' => $notifikasi
         ]);
     }
 
-    // 🔹 Tandai sebagai dibaca
     public function updateStatus($id)
     {
         $notif = Notifikasi::findOrFail($id);
@@ -75,7 +84,6 @@ class NotifikasiController extends Controller
         ]);
     }
 
-    // 🔹 Hapus notifikasi
     public function destroy($id)
     {
         Notifikasi::findOrFail($id)->delete();

@@ -197,7 +197,7 @@
         <a href="{{ route('admin.pengajuan-kia.status') }}">Kelola Status KIA</a>
         <a href="{{ route('admin.kelola-berita.index') }}">Kelola Berita</a>
         <a href="{{ route('admin.notifikasi') }}">Kelola Notifikasi</a>
-        <a href="#">Chat</a>
+        <a href="{{ route('chat.index') }}">Chat</a>
         <form action="{{ route('keluar') }}" method="POST">
             @csrf
             <button type="submit" class="logout-link">Keluar</button>

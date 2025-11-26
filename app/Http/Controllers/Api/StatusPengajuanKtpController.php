@@ -8,34 +8,41 @@ use App\Models\PengajuanKtp;
 
 class StatusPengajuanKtpController extends Controller
 {
-    /**
-     * 🔹 Ambil semua pengajuan KTP milik user yang sedang login
-     */
     public function index(Request $request)
     {
         $user = $request->user();
+        $search = strtolower($request->query('search', ''));
 
         if (!$user) {
             return response()->json([
+                'status' => 'error',
                 'message' => 'User tidak ditemukan atau token tidak valid.'
             ], 401);
         }
 
-        $data = PengajuanKtp::where('user_id', $user->id)
+        $query = PengajuanKtp::where('user_id', $user->id)
             ->select('id', 'nik', 'nama', 'jenis_ktp', 'status', 'keterangan', 'tanggal_pengajuan')
-            ->orderBy('tanggal_pengajuan', 'desc')
-            ->get();
+            ->orderBy('tanggal_pengajuan', 'desc');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(nik) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(nama) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(jenis_ktp) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(status) LIKE ?', ["%$search%"])
+                    ->orWhereRaw('LOWER(tanggal_pengajuan) LIKE ?', ["%$search%"]);
+            });
+        }
+
+        $data = $query->get();
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'total' => $data->count(),
-            'data' => $data
-        ], 200);
+            'data' => $data,
+        ]);
     }
 
-    /**
-     * 🔹 Detail pengajuan (resume)
-     */
     public function resume($id, Request $request)
     {
         $user = $request->user();
@@ -57,8 +64,8 @@ class StatusPengajuanKtpController extends Controller
         }
 
         return response()->json([
-            'status' => 'success',
+            'success' => true,
             'data' => $data
-        ], 200);
+        ]);
     }
 }

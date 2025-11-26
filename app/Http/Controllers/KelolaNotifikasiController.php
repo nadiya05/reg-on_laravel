@@ -12,24 +12,21 @@ class KelolaNotifikasiController extends Controller
 {
     public function index(Request $request)
     {
-        // 🔍 Fitur pencarian
-        $search = $request->input('search');
+        $notifikasiSearch = $request->input('search'); // refactoring data-level 2 ubah variabel $search menjadi $notifikasiSearch
 
         $query = Notifikasi::with('user')
-            ->when($search, function ($q) use ($search) {
-                $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('pesan', 'like', "%{$search}%")
-                  ->orWhere('tipe_pengajuan', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($u) use ($search) {
-                      $u->where('name', 'like', "%{$search}%");
-                  });
+            ->when($notifikasiSearch, function ($q) use ($notifikasiSearch) {
+                $q->where(function ($sub) use ($notifikasiSearch) {
+                    $sub->where('judul', 'like', "%{$notifikasiSearch}%")
+                        ->orWhere('pesan', 'like', "%{$notifikasiSearch}%")
+                        ->orWhere('tipe_pengajuan', 'like', "%{$notifikasiSearch}%")
+                        ->orWhereHas('user', fn($u) =>
+                            $u->where('name', 'like', "%{$notifikasiSearch}%")
+                        );
+                });
             })
             ->orderBy('tanggal', 'desc');
-
-        // 🔢 Pagination
-        $notifikasi = $query->paginate(10)->appends(['search' => $search]);
-
-        // 🔗 Tambahkan data pengajuan (nama + jenis dokumen)
+        $notifikasi = $query->paginate(10)->appends(['search' => $notifikasiSearch]);
         $notifikasi->getCollection()->transform(function ($n) {
             $namaPengajuan = '-';
             $jenisDokumen = '-';
@@ -68,7 +65,7 @@ class KelolaNotifikasiController extends Controller
             return $n;
         });
 
-        return view('admin.notifikasi.index', compact('notifikasi', 'search'));
+        return view('admin.notifikasi.index', compact('notifikasi', 'notifikasiSearch'));
     }
 
     public function destroy($id)
