@@ -14,8 +14,9 @@ use App\Http\Controllers\KelolaStatusKkController;
 use App\Http\Controllers\KelolaBeritaController;
 use App\Http\Controllers\KelolaNotifikasiController;
 use App\Http\Controllers\KelolaChatController;
+use App\Http\Controllers\LandingPageController;
 
-Route::get('/', function () { return view('auth.masuk'); });
+Route::get('/', function () { return view('admin.LandingPage.landing_page'); });
 // Halaman login
 Route::get('/masuk', [AuthController::class, 'showLogin'])->name('masuk');
 
@@ -123,3 +124,6 @@ Route::prefix('admin/chat')->name('chat.')->group(function () {
     Route::post('/send/{user_id}', [KelolaChatController::class, 'sendReply'])->name('send');
     Route::get('/{user_id}', [KelolaChatController::class, 'show'])->name('show');
 });
+
+//Landing Page
+Route::get('/LandingPage', [LandingPageController::class, 'index'])->name('landing_page');
