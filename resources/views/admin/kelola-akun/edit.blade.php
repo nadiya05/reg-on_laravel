@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function toggleFields() {
         if (roleSelect.value === 'admin') {
             nikField.style.display = 'none';
-            jkField.style.display = 'none';
             telpField.style.display = 'none';
         } else {
             nikField.style.display = '';

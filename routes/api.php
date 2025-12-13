@@ -2,10 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Http\Request;
+use Pusher\Pusher;
 
 use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\KelolaAkunController;
 use App\Http\Controllers\Api\InformasiController;
 use App\Http\Controllers\Api\PengajuanKtpController;
 use App\Http\Controllers\Api\StatusPengajuanKtpController;
@@ -29,15 +30,42 @@ Route::post('/login', [AuthApiController::class, 'login']);
 
 
 // =======================================
-// BROADCAST (WAJIB DI LUAR AUTH SANCTUM)
+// BROADCASTING ROUTES (WAJIB DI LUAR AUTH GROUP)
 // =======================================
 Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
+Route::post('/pusher/auth', function (Request $request) {
+    $pusher = new Pusher(
+        config('broadcasting.connections.pusher.key'),
+        config('broadcasting.connections.pusher.secret'),
+        config('broadcasting.connections.pusher.app_id'),
+        ['cluster' => config('broadcasting.connections.pusher.options.cluster')]
+    );
+
+    return $pusher->authenticate(
+        $request->channel_name,
+        $request->socket_id
+    );
+});
+
 
 // =======================================
-// AUTH SANCTUM
+// AUTH SANCTUM (SEMUA BUTUH TOKEN LOGIN)
 // =======================================
 Route::middleware('auth:sanctum')->group(function () {
+
+    // ==========================
+    // CURRENT USER DATA (/me)
+    // ==========================
+    Route::get('/me', function (Request $request) {
+        return response()->json([
+            'id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'avatar' => $request->user()->foto
+                ? asset('storage/'.$request->user()->foto)
+                : asset('storage/default/user.png'),
+        ]);
+    });
 
     // USER API
     Route::apiResource('users', UserController::class);
@@ -80,29 +108,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/notifikasi/{id}/baca', [NotifikasiController::class, 'updateStatus']);
     Route::delete('/notifikasi/{id}', [NotifikasiController::class, 'destroy']);
 
-
-
     // =======================================
     // CHAT SYSTEM API
     // =======================================
-    Route::middleware('auth:sanctum')->post('/chat/start', [ChatController::class, 'startChat']);
-    // Ambil semua chat milik user yang login
+Route::middleware('auth:sanctum')->get('/chat/profile', [ChatController::class, 'profile']);
+    Route::post('/chat/start', [ChatController::class, 'startChat']);
     Route::get('/messages', [ChatController::class, 'index']);
-
-    // Ambil chat 1 user tertentu
-    Route::get('/messages/{userId}', [ChatController::class, 'show']);
-
-    // User kirim pesan
+    Route::get('/messages/{userId}', [ChatController::class, 'show'])
+        ->middleware('is_admin');
     Route::post('/messages', [ChatController::class, 'send']);
-
-    // Admin membalas pesan user
     Route::post('/messages/{userId}/reply', [ChatController::class, 'adminSend'])
         ->middleware('is_admin');
-
-    Route::post('/pusher/auth', function (Request $request) {
-    return auth()->user()
-        ?  Pusher::authenticate($request->channel_name, $request->socket_id)
-        : abort(403);
-});
 
 });

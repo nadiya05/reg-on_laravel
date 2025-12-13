@@ -99,7 +99,7 @@
             margin-top: 70px;
             margin-left: 240px;
             padding: 20px;
-            flex: 1; /* Biar footer tetap di bawah */
+            flex: 1;
             transition: margin-left 0.3s ease;
         }
 
@@ -136,7 +136,7 @@
             color: #fff;
         }
 
-        /* Header kiri (logo + tombol menu) */
+        /* Header kiri */
         .header-left {
             display: flex;
             align-items: center;
@@ -165,7 +165,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Responsif */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-240px);
@@ -183,6 +182,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     <div class="sidebar hidden" id="sidebar">
@@ -224,13 +224,9 @@
             @endif
         </div>
     </div>
-
-    <!-- Content -->
     <div class="content full" id="content">
         @yield('content')
     </div>
-
-    <!-- Footer -->
     <footer>
         © {{ date('Y') }} Reg-On | All Rights Reserved.
     </footer>
@@ -243,6 +239,20 @@
         menuBtn.addEventListener('click', () => {
             sidebar.classList.toggle('hidden');
             content.classList.toggle('full');
+        });
+    </script>
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.15.0/echo.iife.js"></script>
+
+    <script>
+        window.Pusher = Pusher;
+
+        window.Echo = new Echo({
+            broadcaster: 'pusher',
+            key: '{{ env("PUSHER_APP_KEY") }}',
+            cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
+            encrypted: true,
+            forceTLS: true,
         });
     </script>
 </body>

@@ -1,78 +1,93 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Events\MessageSent;
 
 class KelolaChatController extends Controller
 {
+    // List user + default chat
     public function index(Request $request)
     {
         $chatSearch = $request->input('search');
 
-        // List user tanpa pagination + filter
         $users = User::whereHas('chats')
-            ->when($chatSearch, function ($q) use ($chatSearch) {
+            ->with(['chats' => fn($q) => $q->latest()->limit(1)])
+            ->when($chatSearch, function($q) use ($chatSearch) {
                 $q->where('name', 'like', "%{$chatSearch}%")
-                  ->orWhereHas('chats', function ($chat) use ($chatSearch) {
-                      $chat->where('message', 'like', "%{$chatSearch}%");
-                  });
+                ->orWhereHas('chats', fn($chat) =>
+                    $chat->where('message', 'like', "%{$chatSearch}%")
+                );
             })
-            ->orderBy('name')
-            ->get();
+            ->get()
+            ->sortByDesc(fn($u) => optional($u->chats->first())->created_at)
+            ->values();
 
-        return view('chat.index', [
-            'users'      => $users,
-            'chatSearch' => $chatSearch,
-            'activeUser' => null,
-            'messages'   => collect(),
-        ]);
+        $activeUser = $users->first();
+
+        // simpan last_open jika ada active user
+        if ($activeUser) {
+            session()->put("chat_last_open_{$activeUser->id}", now());
+        }
+
+        $messages = $activeUser
+            ? Chat::with('user')->where('user_id', $activeUser->id)->orderBy('created_at', 'asc')->get()
+            : collect();
+
+        return view('chat.index', compact('users','activeUser','messages','chatSearch'));
     }
 
+    // Show chat user spesifik
     public function show(Request $request, $user_id)
     {
         $chatSearch = $request->input('search');
         $activeUser = User::findOrFail($user_id);
 
-        // Ambil semua pesan user
-        $messages = Chat::where('user_id', $user_id)
-            ->when($chatSearch, function ($q) use ($chatSearch) {
-                $q->where('message', 'like', "%{$chatSearch}%")
-                  ->orWhere('sender', 'like', "%{$chatSearch}%");
-            })
-            ->orderBy('created_at')
+        // UPDATE last_open untuk user yang diklik admin
+        session()->put("chat_last_open_{$user_id}", now());
+
+        $messages = Chat::with('user')
+            ->where('user_id', $user_id)
+            ->when($chatSearch, fn($q) => $q->where('message','like',"%{$chatSearch}%")
+                ->orWhere('sender','like',"%{$chatSearch}%"))
+            ->orderBy('created_at','asc')
             ->get();
 
-        // Sidebar list user
         $users = User::whereHas('chats')->orderBy('name')->get();
 
-        return view('chat.index', compact('users', 'activeUser', 'messages', 'chatSearch'));
+        return view('chat.index', compact('users','activeUser','messages','chatSearch'));
     }
 
+    // Kirim pesan admin
     public function sendReply(Request $request, $user_id)
     {
-        $request->validate(['message' => 'required']);
+        $request->validate(['message' => 'required|string']);
 
-        Chat::create([
+        $chat = Chat::create([
             'user_id' => $user_id,
             'sender'  => 'admin',
             'message' => $request->message,
+            'meta'    => ['admin_id' => auth()->id()]
         ]);
+
+        event(new MessageSent($chat));
 
         return back();
     }
 
+    // Hapus pesan
     public function destroy($chat_id)
     {
         Chat::findOrFail($chat_id)->delete();
         return back();
     }
 
+    // Hapus semua chat user
     public function clearUserChat($user_id)
     {
-        Chat::where('user_id', $user_id)->delete();
+        Chat::where('user_id',$user_id)->delete();
         return back();
     }
 }

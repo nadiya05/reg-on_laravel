@@ -16,7 +16,7 @@ class ChatController extends Controller
     public function index()
     {
         if (!Auth::check()) {
-            return response()->json(['data' => []]);
+            return response()->json(['data' => []], 200);
         }
 
         $user = Auth::user();
@@ -33,9 +33,9 @@ class ChatController extends Controller
 
                     // Avatar
                     'avatar'     => $chat->sender === 'user'
-                        ? ($user->foto_url ? asset('storage/' . $user->foto_url) : asset('storage/default/user.png'))
-                        : ($chat->admin && $chat->admin->foto_url
-                            ? asset('storage/' . $chat->admin->foto_url)
+                        ? ($user->foto ? asset('storage/' . $user->foto) : asset('storage/default/user.png'))
+                        : ($chat->adminUser() && $chat->adminUser()->foto
+                            ? asset('storage/' . $chat->adminUser()->foto)
                             : asset('storage/default/admin.png')),
 
                     // Format TANPA DETIK
@@ -45,7 +45,7 @@ class ChatController extends Controller
                 ];
             });
 
-        return response()->json(['data' => $messages]);
+        return response()->json(['data' => $messages], 200);
     }
 
     // ================================
@@ -62,7 +62,7 @@ class ChatController extends Controller
             'message' => $request->message,
         ]);
 
-        broadcast(new MessageSent($chat))->toOthers();
+        event(new MessageSent($chat));
 
         return response()->json([
             'data' => [
@@ -70,14 +70,14 @@ class ChatController extends Controller
                 'user_id'    => $chat->user_id,
                 'sender'     => $chat->sender,
                 'message'    => $chat->message,
-                'avatar'     => $user->foto_url
-                    ? asset('storage/' . $user->foto_url)
+                'avatar' => $user->foto
+                    ? asset('storage/' . $user->foto)
                     : asset('storage/default/user.png'),
                 'created_at' => $chat->created_at
                     ->timezone('Asia/Jakarta')
                     ->format('Y-m-d H:i'),
             ]
-        ]);
+        ], 201);
     }
 
     // ================================
@@ -97,9 +97,10 @@ class ChatController extends Controller
             'user_id' => $userId,
             'sender'  => 'admin',
             'message' => $request->message,
+            'meta'    => ['admin_id' => $admin->id] // optional
         ]);
 
-        broadcast(new MessageSent($chat))->toOthers();
+        event(new MessageSent($chat));
 
         return response()->json([
             'data' => [
@@ -107,50 +108,87 @@ class ChatController extends Controller
                 'user_id'    => $chat->user_id,
                 'sender'     => $chat->sender,
                 'message'    => $chat->message,
-                'avatar'     => $admin->foto_url
-                    ? asset('storage/' . $admin->foto_url)
+                'avatar' => $admin->foto
+                    ? asset('storage/' . $admin->foto)
                     : asset('storage/default/admin.png'),
                 'created_at' => $chat->created_at
                     ->timezone('Asia/Jakarta')
                     ->format('Y-m-d H:i'),
             ]
-        ]);
+        ], 201);
     }
 
     // ================================
-    // START CHAT — HANYA SEKALI
+// START CHAT — SAPAAN OTOMATIS SETIAP HARI
+//  - Sapaan dibuat 1x per hari
+//  - Hanya dari penduduk (bukan admin)
+// ================================
+public function startChat(Request $request)
+{
+    if (!Auth::check()) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    $user = Auth::user();
+
+    // Cek apakah sudah ada sapaan HARI INI
+    $today = now()->timezone('Asia/Jakarta')->format('Y-m-d');
+
+    $alreadyToday = Chat::where('user_id', $user->id)
+        ->where('sender', 'user')
+        ->whereDate('created_at', $today)
+        ->exists();
+
+    if ($alreadyToday) {
+        return response()->json(['message' => 'Sudah ada sapaan hari ini'], 200);
+    }
+
+    // Buat sapaan otomatis harian
+    $chat = Chat::create([
+        'user_id' => $user->id,
+        'sender'  => 'user',
+        'message' => "Halo MinLoh! Saya butuh bantuan.",
+    ]);
+
+    event(new MessageSent($chat));
+
+    return response()->json([
+        'data' => [
+            'id'         => $chat->id,
+            'user_id'    => $chat->user_id,
+            'sender'     => $chat->sender,
+            'message'    => $chat->message,
+            'avatar'     => $user->foto ? asset('storage/' . $user->foto) : asset('storage/default/user.png'),
+            'created_at' => $chat->created_at->timezone('Asia/Jakarta')->format('Y-m-d H:i'),
+        ]
+    ], 201);
+}
+
     // ================================
-    public function startChat(Request $request)
+    // GET PROFILE USER + ADMIN
+    // ================================
+    public function profile()
     {
-        $user = Auth::user();
-
-        $alreadyChat = Chat::where('user_id', $user->id)->exists();
-
-        if ($alreadyChat) {
-            return response()->json(['message' => 'Chat sudah tersedia'], 200);
+        if (!Auth::check()) {
+            return response()->json(null, 401);
         }
 
-        $chat = Chat::create([
-            'user_id' => $user->id,
-            'sender'  => 'user',
-            'message' => "Halo MinLoh, saya butuh bantuan."
-        ]);
+        $user = Auth::user();
 
-        broadcast(new MessageSent($chat))->toOthers();
+        // Ambil admin pertama
+        $admin = \App\Models\User::where('role', 'admin')->first();
 
         return response()->json([
-            'data' => [
-                'id'         => $chat->id,
-                'user_id'    => $chat->user_id,
-                'sender'     => $chat->sender,
-                'message'    => $chat->message,
-                'avatar'     => $user->foto_url
-                    ? asset('storage/' . $user->foto_url)
-                    : asset('storage/default/user.png'),
-                'created_at' => $chat->created_at
-                    ->timezone('Asia/Jakarta')
-                    ->format('Y-m-d H:i'),
-            ]
-        ]);
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'avatar' => $user->foto
+                ? asset('storage/' . $user->foto)
+                : asset('storage/default/user.png'),
+
+            'admin_name' => $admin?->name ?? 'Admin',
+            'admin_avatar' => $admin && $admin->foto
+                ? asset('storage/' . $admin->foto)
+                : asset('storage/default/admin.png'),
+        ], 200);
     }
 }

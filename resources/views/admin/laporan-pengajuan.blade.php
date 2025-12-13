@@ -9,33 +9,66 @@
             margin: 40px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        /* ===================== KOP SURAT (FIX MIRIP WORD) ===================== */
 
-        .logo-container {
+        .kop-wrapper {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 10px;
         }
 
-        .logo-container img {
-            max-width: 200px;
-            height: auto;
+        /* Logo kiri */
+        .kop-wrapper .logo {
+            position: absolute;
+            left: 0;
+            top: 0;
         }
 
-        .logo-container h1 {
-            color: #0077B6;
-            font-size: 22px;
+        .kop-wrapper .logo img {
+            width: 120px;
+        }
+
+        .kop-wrapper .text {
+    flex: 1;               
+    text-align: center;
+    margin-left: 100px;   /* ruang untuk logo */
+    padding-left: 30px;   /* 🔥 geser keseluruhan teks ke kanan */
+}
+
+        .judul-1 {
+            font-family: "Times New Roman", serif;
+            font-size: 24px;
+            font-weight: 430;
             margin: 0;
-            font-weight: 700;
         }
 
+        .judul-2 {
+            font-family: "Times New Roman", serif;
+            font-size: 37px;
+            font-weight: 900;
+            margin: 0;
+            margin-top: -5px;
+        }
+
+        .alamat {
+            font-family: Arial, sans-serif;
+            margin-top: 3px;
+            font-size: 14px;
+        }
+
+        .garis-kop {
+            border-bottom: 4px solid black;
+            margin-top: 30px;   /* 🔥 TURUNKAN garis jauh dari logo */
+            margin-bottom: 60px;
+            width: 100%;
+        }
+
+        /* ===================== SECTION TITLE ===================== */
         h2 {
             color: #0077B6;
-            margin-top: 15px;
+            margin-top: 20px;
             margin-bottom: 5px;
             text-align: center;
         }
@@ -44,13 +77,14 @@
             color: #0077B6;
             text-align: center;
             font-weight: 500;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
+        /* ===================== TABLE ===================== */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 25px;
+            margin-top: 20px;
             font-size: 13px;
         }
 
@@ -70,6 +104,7 @@
             color: white;
         }
 
+        /* ===================== FOOTER ===================== */
         .footer {
             margin-top: 40px;
             text-align: right;
@@ -77,36 +112,39 @@
             font-size: 13px;
         }
 
-        .section-title {
-            color: #0077B6;
-            font-size: 16px;
-            margin-top: 35px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        /* 🔹 Pemisah halaman untuk PDF */
+        /* ===================== PAGE BREAK ===================== */
         .page-break {
             page-break-before: always;
         }
+
     </style>
 </head>
 <body>
+
     <!-- ================= HALAMAN 1 ================= -->
-    <div class="header">
-        <div class="logo-container">
-            <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
+    <div class="kop-wrapper">
+        <div class="logo">
+            <img src="{{ public_path('storage/images/logo_indramayu.png') }}" alt="Logo">
         </div>
-        <h2>Laporan Jumlah Pengajuan Dokumen</h2>
-        @if($tanggalAwal && $tanggalAkhir)
-            <p class="subtext">
-                Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
-                s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
-            </p>
-        @endif
+
+        <div class="text">
+            <div class="judul-1">PEMERINTAH KABUPATEN INDRAMAYU</div>
+            <div class="judul-2">KECAMATAN LOHBENER</div>
+            <div class="alamat">Jl. Raya Lohbener Telp. (0234) 276855 Lohbener – Indramayu 45252</div>
+        </div>
     </div>
 
-    <!-- 🔹 Tabel ringkasan -->
+    <div class="garis-kop"></div>
+
+    <h2>Laporan Jumlah Pengajuan Dokumen</h2>
+
+    @if($tanggalAwal && $tanggalAkhir)
+        <p class="subtext">
+            Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
+            s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
+        </p>
+    @endif
+
     <table>
         <thead>
             <tr>
@@ -128,19 +166,32 @@
         </tfoot>
     </table>
 
-    <!-- ================= HALAMAN 2: Rincian KTP ================= -->
+    <!-- ================= HALAMAN 2: DETAIL KTP ================= -->
     @if($dataKtp->count() > 0)
     <div class="page-break"></div>
-    <div class="header">
-        <div class="logo-container">
-            <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
+
+    <div class="kop-wrapper">
+        <div class="logo">
+            <img src="{{ public_path('storage/images/logo_indramayu.png') }}">
         </div>
-        <h2>Rincian Pengajuan KTP</h2>
-        @if($tanggalAwal && $tanggalAkhir)
-            <p><strong>Periode:</strong> {{ \Carbon\Carbon::parse($tanggalAwal)->format('d M Y') }} 
-            s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->format('d M Y') }}</p>
-        @endif
+
+        <div class="text">
+            <div class="judul-1">PEMERINTAH KABUPATEN INDRAMAYU</div>
+            <div class="judul-2">KECAMATAN LOHBENER</div>
+            <div class="alamat">Jl. Raya Lohbener Telp. (0234) 276855 Lohbener – Indramayu 45252</div>
+        </div>
     </div>
+
+    <div class="garis-kop"></div>
+
+    <h2>Rincian Pengajuan KTP</h2>
+
+    @if($tanggalAwal && $tanggalAkhir)
+        <p class="subtext">
+            Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
+            s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
+        </p>
+    @endif
 
     <table>
         <thead>
@@ -168,21 +219,32 @@
     </table>
     @endif
 
-    <!-- ================= HALAMAN 3: Rincian KK ================= -->
+    <!-- ================= HALAMAN 3: DETAIL KK ================= -->
     @if($dataKk->count() > 0)
     <div class="page-break"></div>
-    <div class="header">
-        <div class="logo-container">
-            <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
+
+    <div class="kop-wrapper">
+        <div class="logo">
+            <img src="{{ public_path('storage/images/logo_indramayu.png') }}">
         </div>
-        <h2>Rincian Pengajuan KK</h2>
-        @if($tanggalAwal && $tanggalAkhir)
-            <p class="subtext">
-                Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
-                s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
-            </p>
-        @endif
+
+        <div class="text">
+            <div class="judul-1">PEMERINTAH KABUPATEN INDRAMAYU</div>
+            <div class="judul-2">KECAMATAN LOHBENER</div>
+            <div class="alamat">Jl. Raya Lohbener Telp. (0234) 276855 Lohbener – Indramayu 45252</div>
+        </div>
     </div>
+
+    <div class="garis-kop"></div>
+
+    <h2>Rincian Pengajuan KK</h2>
+
+    @if($tanggalAwal && $tanggalAkhir)
+        <p class="subtext">
+            Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
+            s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
+        </p>
+    @endif
 
     <table>
         <thead>
@@ -210,21 +272,32 @@
     </table>
     @endif
 
-    <!-- ================= HALAMAN 4: Rincian KIA ================= -->
+    <!-- ================= HALAMAN 4: DETAIL KIA ================= -->
     @if($dataKia->count() > 0)
     <div class="page-break"></div>
-    <div class="header">
-        <div class="logo-container">
-            <img src="{{ public_path('storage/images/logo.png') }}" alt="Logo Reg-On">
+
+    <div class="kop-wrapper">
+        <div class="logo">
+            <img src="{{ public_path('storage/images/logo_indramayu.png') }}">
         </div>
-        <h2>Rincian Pengajuan KIA</h2>
-        @if($tanggalAwal && $tanggalAkhir)
-            <p class="subtext">
-                Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
-                s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
-            </p>
-        @endif
+
+        <div class="text">
+            <div class="judul-1">PEMERINTAH KABUPATEN INDRAMAYU</div>
+            <div class="judul-2">KECAMATAN LOHBENER</div>
+            <div class="alamat">Jl. Raya Lohbener Telp. (0234) 276855 Lohbener – Indramayu 45252</div>
+        </div>
     </div>
+
+    <div class="garis-kop"></div>
+
+    <h2>Rincian Pengajuan KIA</h2>
+
+    @if($tanggalAwal && $tanggalAkhir)
+        <p class="subtext">
+            Periode: {{ \Carbon\Carbon::parse($tanggalAwal)->translatedFormat('d F Y') }}
+            s.d. {{ \Carbon\Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') }}
+        </p>
+    @endif
 
     <table>
         <thead>
@@ -252,9 +325,10 @@
     </table>
     @endif
 
-    <!-- ================= FOOTER ================= -->
+    <!-- FOOTER -->
     <div class="footer">
         Dicetak pada: {{ now()->translatedFormat('d F Y') }}
     </div>
+
 </body>
 </html>
