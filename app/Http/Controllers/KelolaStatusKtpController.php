@@ -87,15 +87,18 @@ class KelolaStatusKtpController extends Controller
     public function cetakResumePdf($id)
     {
         $pengajuan = PengajuanKtp::findOrFail($id);
-        $user = User::findOrFail($pengajuan->user_id);
+        $user = $pengajuan->user; // lebih rapi kalau ada relasi
 
-        $pdf = PDF::loadView('cetak_resume', compact('pengajuan', 'user'))
-                ->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('cetak_resume', [
+            'pengajuan'     => $pengajuan,
+            'user'          => $user,
+            'tipePengajuan' => 'KTP', 
+        ])->setPaper('A4', 'portrait');
 
         $fileName = 'Resume_KTP_' . $pengajuan->nomor_antrean . '.pdf';
+
         return $pdf->download($fileName);
     }
-
     /**
      * Hapus data pengajuan KTP.
      */

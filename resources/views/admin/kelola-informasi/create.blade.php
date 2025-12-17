@@ -8,32 +8,29 @@
         <form action="{{ route('admin.kelola-informasi.store') }}" method="POST">
             @csrf
 
-            {{-- Jenis Pengajuan --}}
+            {{-- Jenis Dokumen --}}
             <div class="mb-3">
-                <label for="jenis_pengajuan" class="form-label">Jenis Pengajuan</label>
-                <select name="jenis_pengajuan" class="form-control" required>
-                    <option value="">-- Pilih Jenis Pengajuan --</option>
-                    @foreach($pengajuanOptions as $option)
-                        <option value="{{ $option }}">{{ $option }}</option>
+                <label class="form-label">Jenis Dokumen</label>
+                <select id="jenis_dokumen" name="jenis_dokumen" class="form-control" required>
+                    <option value="">-- Pilih Jenis Dokumen --</option>
+                    @foreach($dokumenOptions as $dok)
+                        <option value="{{ $dok }}">{{ $dok }}</option>
                     @endforeach
                 </select>
             </div>
 
-            {{-- Jenis Dokumen --}}
+            {{-- Jenis Pengajuan (DINAMIS) --}}
             <div class="mb-3">
-                <label for="jenis_dokumen" class="form-label">Jenis Dokumen</label>
-                <select name="jenis_dokumen" class="form-control" required>
-                    <option value="">-- Pilih Jenis Dokumen --</option>
-                    @foreach($dokumenOptions as $option)
-                        <option value="{{ $option }}">{{ $option }}</option>
-                    @endforeach
+                <label class="form-label">Jenis Pengajuan</label>
+                <select id="jenis_pengajuan" name="jenis_pengajuan" class="form-control" required>
+                    <option value="">-- Pilih Jenis Dokumen Terlebih Dahulu --</option>
                 </select>
             </div>
 
             {{-- Deskripsi --}}
             <div class="mb-3">
-                <label for="deskripsi" class="form-label">Deskripsi</label>
-                <textarea name="deskripsi" class="form-control" rows="3" placeholder="Masukkan deskripsi"></textarea>
+                <label class="form-label">Deskripsi</label>
+                <textarea name="deskripsi" class="form-control" rows="3"></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Simpan</button>
@@ -41,4 +38,25 @@
         </form>
     </div>
 </div>
+
+{{-- SCRIPT --}}
+<script>
+    const jenisPengajuanMap = @json($jenisPengajuanByDokumen);
+
+    const dokumenSelect = document.getElementById('jenis_dokumen');
+    const pengajuanSelect = document.getElementById('jenis_pengajuan');
+
+    dokumenSelect.addEventListener('change', function () {
+        pengajuanSelect.innerHTML = '<option value="">-- Pilih Jenis Pengajuan --</option>';
+
+        if (jenisPengajuanMap[this.value]) {
+            jenisPengajuanMap[this.value].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                pengajuanSelect.appendChild(option);
+            });
+        }
+    });
+</script>
 @endsection

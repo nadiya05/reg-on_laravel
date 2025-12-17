@@ -94,7 +94,24 @@
                 margin-top: 20px;
             }
         }
+        /* ===================== LOGO DI ATAS LANDINGPAGE 2 ===================== */
+        .header-left-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
 
+        .header-logo {
+            width: 200px;    
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .header-logo {
+                width: 120px;
+            }
+        }
         /* ===================== CONTENT LAIN ===================== */
         .section-title {
             font-size: 22px;
@@ -144,11 +161,19 @@
 <body>
     <!-- ===================== HEADER ===================== -->
     <div class="header-section">
+        <div class="logo-wrapper">
+        
+    </div>
         <div class="header-inner">
-            <img src="{{ asset('storage/images/landing page2.jpeg') }}" alt="Left Person" class="header-left" />
+            <div class="header-left-group">
+                <img src="{{ asset('storage/images/logo.png') }}" alt="Logo Kecamatan Lohbener" class="header-logo">
 
+                <img src="{{ asset('storage/images/landing page2.jpeg') }}" 
+                    alt="Left Person" 
+                    class="header-left" />
+            </div>
             <div class="header-text">
-                <h2>Selamat Datang Di Website<br />Kecamatan Lohbener, Admin!!</h2>
+                <h2>Selamat Datang Di Website<br />Reg-On, Admin!!</h2>
                 <a href="{{ route('masuk') }}" class="btn btn-login">ketuk untuk masuk</a>
             </div>
 
@@ -180,16 +205,16 @@
                 <div class="blue-box">Informasi seputar pengajuan dokumen</div>
             </div>
             <div class="col-md-6 mb-3">
-                <div class="blue-box">melayani registrasi antrean online pembuatan dokumen KTP</div>
+                <div class="blue-box">Melayani registrasi antrean online pembuatan dokumen KTP</div>
             </div>
         </div>
 
         <div class="row text-center mb-4">
             <div class="col-md-6 mb-3">
-                <div class="blue-box">melayani registrasi antrean online pembuatan dokumen KK</div>
+                <div class="blue-box">Melayani registrasi antrean online pembuatan dokumen KK</div>
             </div>
             <div class="col-md-6 mb-3">
-                <div class="blue-box">melayani registrasi antrean online pembuatan dokumen KIA</div>
+                <div class="blue-box">Melayani registrasi antrean online pembuatan dokumen KIA</div>
             </div>
         </div>
 
@@ -197,7 +222,7 @@
             <div class="col-md-10">
                 <div style="background:#0077b6; padding:30px 25px; border-radius:30px; color:white; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); font-size:15px; line-height:1.6;">
                     <p style="margin-bottom:18px; font-weight:500;">
-                        Kunjungi Kantor Kecamatan Lohbener untuk pengambilan dokumennya. Kami siap membantu kebutuhan Anda.
+                        Kunjungi Kantor Kecamatan Lohbener untuk pengambilan dokumennya. 
                     </p>
                     <div style="background:white; padding:20px; border-radius:20px; color:#0077B6; display:inline-block; text-align:left;">
                         <div style="display:flex; align-items:flex-start; gap:12px;">

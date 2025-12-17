@@ -28,6 +28,10 @@ class PengajuanKk extends Model
         'akta_kelahiran',
         'ijazah',
         'keterangan',
+        'akta_cerai',
+        'bukti_cek_darah',
+        'surat_penggabungan_kk',
+        'surat_pisah_kk',
     ];
 
     /**

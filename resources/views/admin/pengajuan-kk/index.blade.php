@@ -8,17 +8,48 @@
         <a href="{{ route('pengajuan-kk.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i> Tambah Pengajuan
         </a>
-            {{-- Form Pencarian --}}
     </div>
-<div class="d-flex justify-content-end mb-3">
+
+    {{-- Form Pencarian --}}
+    <div class="d-flex justify-content-end mb-3">
         <form action="{{ route('pengajuan-kk.index') }}" method="GET" class="d-flex">
             <input type="text" name="search" value="{{ request('search') }}" class="form-control me-2"
-                placeholder="Cari NIK / Nama / Jenis KK / Nomor Antrean" style="max-width: 280px;">
+                placeholder="Cari NIK / Nama / Jenis KK / Nomor Antrean" style="max-width: 280px;" autocomplete="off">
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-search"></i> Cari
             </button>
         </form>
     </div>
+
+    @php
+        // mapping jenis KK → dokumen yang relevan
+        $kkDocs = [
+            'pendidikan' => ['ijazah'],
+            'status_perkawinan' => ['surat_nikah'],
+            'perceraian' => ['akta_cerai'],
+            'kematian' => ['surat_kematian'],
+            'gol_darah' => ['bukti_cek_darah'],
+            'penambahan_anggota' => ['akta_kelahiran'],
+            'pindahan' => ['surat_keterangan_pindah'],
+            'pisah_kk' => ['surat_pisah_kk'],
+        ];
+
+        // semua label dokumen untuk header
+        $docLabels = [
+            'formulir_permohonan_kk' => 'Formulir KK',
+            'surat_nikah' => 'Surat Nikah',
+            'surat_keterangan_pindah' => 'Surat Keterangan Pindah',
+            'kk_asli' => 'KK Asli',
+            'surat_kematian' => 'Surat Kematian',
+            'akta_kelahiran' => 'Akta Kelahiran',
+            'ijazah' => 'Ijazah',
+            'akta_cerai' => 'Akta Cerai',
+            'bukti_cek_darah' => 'Bukti Cek Darah',
+            'surat_penggabungan_kk' => 'Surat Penggabungan KK',
+            'surat_pisah_kk' => 'Surat Pisah KK',
+        ];
+    @endphp
+
     <x-table>
         <x-slot name="head">
             <tr>
@@ -28,13 +59,9 @@
                 <th>NIK</th>
                 <th>Nama</th>
                 <th>Tanggal Pengajuan</th>
-                <th>Formulir Permohonan KK</th>
-                <th>Surat Nikah</th>
-                <th>Surat Keterangan Pindah</th>
-                <th>KK Asli</th>
-                <th>Surat Kematian</th>
-                <th>Akta Kelahiran</th>
-                <th>Ijazah</th>
+                @foreach($docLabels as $label)
+                    <th>{{ $label }}</th>
+                @endforeach
                 <th>Aksi</th>
             </tr>
         </x-slot>
@@ -49,92 +76,49 @@
                 <td>{{ $data->nama }}</td>
                 <td>{{ $data->tanggal_pengajuan }}</td>
 
-                {{-- Formulir Permohonan KK --}}
-                <td>
-                    @if($data->formulir_permohonan_kk)
-                        <a href="{{ asset('storage/' . $data->formulir_permohonan_kk) }}" target="_blank">Lihat Formulir</a>
-                    @else
-                        <span class="text-muted">Tidak ada</span>
-                    @endif
-                </td>
+                @foreach($docLabels as $field => $label)
+                    <td>
+                        @php
+                            $relevant = ($field === 'formulir_permohonan_kk') || 
+                                        (isset($kkDocs[$data->jenis_kk]) && in_array($field, $kkDocs[$data->jenis_kk]));
+                        @endphp
 
-                {{-- Surat Nikah --}}
-                <td>
-                    @if($data->surat_nikah)
-                        <a href="{{ asset('storage/' . $data->surat_nikah) }}" target="_blank">Lihat Surat</a>
-                    @else
-                        <span class="text-muted">Tidak ada</span>
-                    @endif
-                </td>
+                        @if($relevant)
+                            @if($data->$field)
+                                <a href="{{ asset('storage/' . $data->$field) }}" target="_blank">Lihat</a>
+                            @else
+                                <span class="text-muted">Tidak ada</span>
+                            @endif
+                        @else
+                            <span class="text-muted">Tidak ada</span>
+                        @endif
+                    </td>
+                @endforeach
 
-                {{-- Surat Keterangan Pindah --}}
                 <td>
-                    @if($data->surat_keterangan_pindah)
-                        <a href="{{ asset('storage/' . $data->surat_keterangan_pindah) }}" target="_blank">Lihat Surat</a>
-                    @else
-                        <span class="text-muted">Tidak ada</span>
-                    @endif
-                </td>
-
-                {{-- KK Asli --}}
-                <td>
-                    @if($data->kk_asli)
-                        <a href="{{ asset('storage/' . $data->kk_asli) }}" target="_blank">Lihat KK Asli</a>
-                    @else
-                        <span class="text-muted">Tidak ada</span>
-                    @endif
-                </td>
-
-                {{-- Surat Kematian --}}
-                <td>
-                    @if($data->surat_kematian)
-                        <a href="{{ asset('storage/' . $data->surat_kematian) }}" target="_blank">Lihat Surat</a>
-                    @else
-                        <span class="text-muted">Tidak ada</span>
-                    @endif
-                </td>
-
-                {{-- Akta Kelahiran --}}
-                <td>
-                    @if($data->akta_kelahiran)
-                        <a href="{{ asset('storage/' . $data->akta_kelahiran) }}" target="_blank">Lihat Akta</a>
-                    @else
-                        <span class="text-muted">Tidak ada</span>
-                    @endif
-                </td>
-
-                {{-- Ijazah --}}
-                <td>
-                    @if($data->ijazah)
-                        <a href="{{ asset('storage/' . $data->ijazah) }}" target="_blank">Lihat Ijazah</a>
-                    @else
-                        <span class="text-muted">Tidak ada</span>
-                    @endif
-                </td>
-
-                {{-- Aksi --}}
-                <td>
-                    <a href="{{ route('pengajuan-kk.edit', $data->id) }}" class="btn btn-warning btn-sm">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    <form action="{{ route('pengajuan-kk.destroy', $data->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('Yakin hapus data?')" class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
+                    <div class="d-flex gap-1">
+                        <a href="{{ route('pengajuan-kk.edit', $data->id) }}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form action="{{ route('pengajuan-kk.destroy', $data->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" onclick="return confirm('Yakin hapus data?')" class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="14" class="text-center">Belum ada pengajuan</td>
+                <td colspan="{{ 6 + count($docLabels) + 1 }}" class="text-center">Belum ada pengajuan</td>
             </tr>
             @endforelse
         </x-slot>
     </x-table>
-  {{-- Pagination --}}
-    <div>
+
+    <div class="mt-3">
         {{ $pengajuan->links('pagination::bootstrap-5') }}
     </div>
 </div>

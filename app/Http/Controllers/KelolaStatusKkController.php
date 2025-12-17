@@ -82,7 +82,7 @@ class KelolaStatusKkController extends Controller
     {
         $pengajuan = PengajuanKk::findOrFail($id);
         $user = User::findOrFail($pengajuan->user_id);
-        return view('admin.pengajuan-kk.resume_pengajuan', compact('pengajuan', 'user'));
+        return view('resume_pengajuan', compact('pengajuan', 'user'));
     }
 
     /**
@@ -91,12 +91,16 @@ class KelolaStatusKkController extends Controller
     public function cetakResumePdf($id)
     {
         $pengajuan = PengajuanKk::findOrFail($id);
-        $user = User::findOrFail($pengajuan->user_id);
+        $user = $pengajuan->user; // lebih rapi kalau ada relasi
 
-        $pdf = PDF::loadView('admin.pengajuan-kk.cetak_resume_kk', compact('pengajuan', 'user'))
-                ->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('cetak_resume', [
+            'pengajuan'     => $pengajuan,
+            'user'          => $user,
+            'tipePengajuan' => 'KK', 
+        ])->setPaper('A4', 'portrait');
 
         $fileName = 'Resume_KK_' . $pengajuan->nomor_antrean . '.pdf';
+
         return $pdf->download($fileName);
     }
 

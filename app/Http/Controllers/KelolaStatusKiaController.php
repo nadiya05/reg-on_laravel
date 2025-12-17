@@ -91,15 +91,18 @@ class KelolaStatusKiaController extends Controller
     public function cetakResumePdf($id)
     {
         $pengajuan = PengajuanKia::findOrFail($id);
-        $user = User::findOrFail($pengajuan->user_id);
+        $user = $pengajuan->user; 
 
-        $pdf = PDF::loadView('cetak_resume', compact('pengajuan', 'user'))
-                ->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('cetak_resume', [
+            'pengajuan'     => $pengajuan,
+            'user'          => $user,
+            'tipePengajuan' => 'KIA', 
+        ])->setPaper('A4', 'portrait');
 
         $fileName = 'Resume_KIA_' . $pengajuan->nomor_antrean . '.pdf';
+
         return $pdf->download($fileName);
     }
-
     /**
      * 🔹 Hapus data pengajuan KIA.
      */

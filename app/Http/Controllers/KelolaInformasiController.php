@@ -4,78 +4,120 @@ namespace App\Http\Controllers;
 
 use App\Models\Informasi;
 use Illuminate\Http\Request;
+use App\Models\PengajuanKtp;
+use App\Models\PengajuanKk;
+use App\Models\PengajuanKia;
 
 class KelolaInformasiController extends Controller
 {
-    // Tampilkan semua data
-   public function index(Request $request)
-{
-    $query = Informasi::query();
+    // =========================
+    // INDEX
+    // =========================
+    public function index(Request $request)
+    {
+        $query = Informasi::query();
 
-    // fitur search (kaya di pengajuan KTP)
-    if (!empty($request->search)) {
-        $search = $request->search;
-        $query->where(function ($q) use ($search) {
-            $q->where('jenis_pengajuan', 'like', "%{$search}%")
-              ->orWhere('jenis_dokumen', 'like', "%{$search}%")
-              ->orWhere('deskripsi', 'like', "%{$search}%");
-        });
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('jenis_pengajuan', 'like', "%{$search}%")
+                  ->orWhere('jenis_dokumen', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        $informasi = $query->orderBy('id', 'desc')->paginate(10);
+
+        return view('admin.kelola-informasi.index', compact('informasi'));
     }
 
-    $informasi = $query->orderBy('id', 'desc')->paginate(10);
-
-    return view('admin.kelola-informasi.index', compact('informasi'));
-}
-
+    // =========================
+    // CREATE
+    // =========================
     public function create()
     {
-        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak dan Ubah Status'];
-        $dokumenOptions   = ['KTP', 'KK', 'KIA'];
-
-        return view('admin.kelola-informasi.create', compact('pengajuanOptions', 'dokumenOptions'));
+        return view('admin.kelola-informasi.create', [
+            'dokumenOptions' => ['KTP', 'KK', 'KIA'],
+            'jenisPengajuanByDokumen' => [
+                'KTP' => PengajuanKtp::getJenisKtpOptions(),
+                'KK'  => PengajuanKk::getJenisKkOptions(),
+                'KIA' => PengajuanKia::getJenisKiaOptions(),
+            ]
+        ]);
     }
 
+    // =========================
+    // STORE
+    // =========================
     public function store(Request $request)
     {
         $request->validate([
-            'jenis_pengajuan' => 'required|string|max:255',
-            'jenis_dokumen'   => 'required|string|max:255',
+            'jenis_dokumen'   => 'required|in:KTP,KK,KIA',
+            'jenis_pengajuan' => 'required|string',
             'deskripsi'       => 'nullable|string',
         ]);
 
-        Informasi::create($request->all());
+        Informasi::create($request->only([
+            'jenis_dokumen',
+            'jenis_pengajuan',
+            'deskripsi'
+        ]));
 
-        return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil ditambahkan!');
+        return redirect()
+            ->route('admin.kelola-informasi')
+            ->with('success', 'Data berhasil ditambahkan!');
     }
 
+    // =========================
+    // EDIT
+    // =========================
     public function edit($id)
     {
         $info = Informasi::findOrFail($id);
-        $pengajuanOptions = ['Pemula', 'Kehilangan', 'Rusak dan Ubah Status'];
-        $dokumenOptions   = ['KTP', 'KK', 'KIA'];
 
-        return view('admin.kelola-informasi.edit', compact('info', 'pengajuanOptions', 'dokumenOptions'));
+        return view('admin.kelola-informasi.edit', [
+            'info' => $info,
+            'dokumenOptions' => ['KTP', 'KK', 'KIA'],
+            'jenisPengajuanByDokumen' => [
+                'KTP' => PengajuanKtp::getJenisKtpOptions(),
+                'KK'  => PengajuanKk::getJenisKkOptions(),
+                'KIA' => PengajuanKia::getJenisKiaOptions(),
+            ]
+        ]);
     }
 
+    // =========================
+    // UPDATE
+    // =========================
     public function update(Request $request, $id)
     {
         $request->validate([
-            'jenis_pengajuan' => 'required|string|max:255',
-            'jenis_dokumen'   => 'required|string|max:255',
+            'jenis_dokumen'   => 'required|in:KTP,KK,KIA',
+            'jenis_pengajuan' => 'required|string',
             'deskripsi'       => 'nullable|string',
         ]);
 
         $info = Informasi::findOrFail($id);
-        $info->update($request->all());
+        $info->update($request->only([
+            'jenis_dokumen',
+            'jenis_pengajuan',
+            'deskripsi'
+        ]));
 
-        return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil diperbarui!');
+        return redirect()
+            ->route('admin.kelola-informasi')
+            ->with('success', 'Data berhasil diperbarui!');
     }
 
+    // =========================
+    // DELETE
+    // =========================
     public function destroy($id)
     {
-        $info = Informasi::findOrFail($id);
-        $info->delete();
+        Informasi::findOrFail($id)->delete();
 
-        return redirect()->route('admin.kelola-informasi')->with('success', 'Data berhasil dihapus!');
+        return redirect()
+            ->route('admin.kelola-informasi')
+            ->with('success', 'Data berhasil dihapus!');
     }
 }

@@ -91,9 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- KK ---
     Route::get('/informasi_kk', [InformasiKkController::class, 'index']);
     Route::get('/pengajuan-kk', [PengajuanKkController::class, 'index']);
-    Route::post('/pengajuan-kk/pemula', [PengajuanKkController::class, 'storePemula']);
-    Route::post('/pengajuan-kk/ubah-status', [PengajuanKkController::class, 'storeUbahStatus']);
-    Route::get('/pengajuan_kk/{id}', [PengajuanKkController::class, 'show']);
+    Route::post('/form-pengajuan-kk', [PengajuanKkController::class, 'store']);
+    Route::get('/pengajuan-kk/{id}', [PengajuanKkController::class, 'show']);
     Route::get('/status_pengajuan_kk', [StatusPengajuanKkController::class, 'index']);
     Route::get('/status_pengajuan_kk/{id}', [StatusPengajuanKkController::class, 'resume']);
 
